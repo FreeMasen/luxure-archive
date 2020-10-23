@@ -10,6 +10,21 @@ local function _append(t, key, value)
     end
 end
 
+local function serialize_header(key, value)
+    if type(value) == "table" then
+        value = value[#value]
+    end
+    return string.format("%s: %s", string.gsub(key, "_"), value)
+end
+
+
+function Headers:serialize()
+    local ret = ""
+    for key, value in pairs(self) do
+        ret = ret .. serialize_header(key, value) .. "\r\n"
+    end
+end
+
 function Headers:append_chunk(text)
     if string.match(text, "^\\s+") ~= nil then
         if self.last_key == nil then
@@ -20,17 +35,21 @@ function Headers:append_chunk(text)
     for raw_key, value in string.gmatch(text, "([0-9a-zA-Z\\-]+): (.+);?") do
         local key = Headers.normalize_key(raw_key)
         self.last_key = key
-        if self[key] == nil then
-            self[key] = {}
-        end
-        table.insert(self[key], value)
+        self:append(key, value)
     end
+end
+
+function Headers:append(key, value)
+    if self[key] == nil then
+        self[key] = {}
+    end
+    table.insert(self[key], value)
 end
 
 --- Constructor for a Headers instance with the provided text
 function Headers.from_chunk(text)
     local headers = Headers.new()
-    headers:append_from(text)
+    headers:append_chunk(text)
     return headers
 end
 
@@ -132,7 +151,6 @@ if _G.TEST then
                 h:append_chunk("Content-Location: /index.html")
                 assert(h.content_location[1] == "/index.html", 'h.content_location ~= "/index.html"')
                 h:append_chunk("Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==")
-                print(u.table_string(h))
                 assert(h.content_md5[1] == "Q2hlY2sgSW50ZWdyaXR5IQ==")
                 h:append_chunk("Content-Range: bytes 21010-47021/47022")
                 assert(h.content_range[1] == "bytes 21010-47021/47022", 'h.content_range ~= "bytes 21010-47021/47022"')
@@ -197,10 +215,122 @@ if _G.TEST then
                 h:append_chunk("WWW-Authenticate: Basic")
                 assert(h.www_authenticate[1] == "Basic", 'h.www_authenticate ~= "Basic"')
             end)
+
+            it("Can handle multi line headers", function()
+                local h = Headers.new()
+                h:append_chunk("x-Multi-Line-Header: things and stuff")
+                h:append_chunk(" places and people")
+                assert(h.x_multi_line_header, "thinigs and stuff\nplaces and people")
+            end)
         end)
     end)
 end
+
+Request = {}
+
+Request.__index = Request
+
+
+Request.__index = function (table, key)
+    if key == "headers" then
+        return Request.headers(table)
+    end
+end
+
+--- Parse the first line of an HTTP request
+local function parse_preamble(line)
+    for method, path, http_version in string.gmatch(line, "([A-Z]+) (.+) HTTP/([0-9.]+)") do
+        return {
+            method = method,
+            path = path,
+            http_version = http_version,
+            raw = line .. "\r\n",
+            headers = nil,
+            body = nil,
+        }
+    end
+    return nil, string.format("Invalid http request first line: '%s'", line)
+end
+
+--- Constructor from the provided incoming socket connection
+function Request.from(incoming)
+    local line, acc_err = incoming:receive()
+    if acc_err then
+        return nil, acc_err
+    end
+    local pre, pre_err = parse_preamble(line)
+    if pre_err then
+        return nil, acc_err
+    end
+    setmetatable(pre, Request)
+    pre.parsed_headers = false
+    return pre
+end
+
+--- Get the headers for this request
+--- parsing the incoming stream of headers
+--- if not already parsed
+function Request:headers()
+    if self.headers == nil then
+        local err = self:_parse_headers()
+        if err == nil then
+            return err
+        end
+    end
+    return self.headers
+end
+
+function Request:_parse_headers()
+    while true do
+        local done, err = self:_parse_header()
+        if err ~= nil then
+            return err
+        end
+        if done then
+            self.parsed_headers = true
+            return
+        end
+    end
+end
+
+function Request:_parse_header()
+    local line, err = self:_next_chunk()
+    if err ~= nil then
+        return nil, err
+    end
+    if self.headers == nil then
+        self.headers = header.Headers.new()
+    end
+    if line == "" then
+        self:_append_raw("")
+        return true
+    else
+        self.headers:append_from(line)
+    end
+    return false
+end
+
+function Request:_next_chunk()
+    local chunk, err = self.socket:receive()
+    if chunk ~= nil then
+        self:_append_raw(chunk)
+    end
+    return chunk, err
+end
+
+function Request:_append_raw(line)
+    self.raw = self.raw .. line .. "\r\n"
+end
+
+function Request:_append_body(line)
+    if self.body == nil then
+        self.body = line
+    else
+        self.body = self.body .. line
+    end
+end
+
 return {
+    Request = Request,
     Headers = Headers,
 }
-
