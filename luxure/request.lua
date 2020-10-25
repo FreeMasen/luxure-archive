@@ -33,20 +33,33 @@ function Headers:append_chunk(text)
         if self.last_key == nil then
             return "Continuation with no key"
         end
-        table.insert(self[self.last_key], text)
+        local ty = type(self[self.last_key])
+        if ty == "string" then
+            self[self.last_key] = {self[self.last_key], text}
+        elseif ty == "table" then
+            table.insert(self[self.last_key], text)
+        else
+            self[self.last_key] = text
+        end
+        return
     end
     for raw_key, value in string.gmatch(text, "([0-9a-zA-Z\\-]+): (.+);?") do
         local key = Headers.normalize_key(raw_key)
         self.last_key = key
-        self:append(key, value)
+        self[key] = value
     end
 end
 
+---Append a key value pair to this collection
+---@param self table
+---@param key string
+---@param value string
 function Headers:append(key, value)
     if self[key] == nil then
-        self[key] = {}
+        self[key] = value
+    else
+        table.insert(self[key], value)
     end
-    table.insert(self[key], value)
 end
 
 --- Constructor for a Headers instance with the provided text
@@ -76,7 +89,7 @@ function Headers:append_from(text)
 end
 
 --- Convert a standard header key to the normalized
---- lua identifer ued by this collection
+--- lua identifer used by this collection
 --- @param key string
 --- @return string
 function Headers.normalize_key(key)
@@ -104,7 +117,9 @@ function Headers:get_one(key)
         return nil
     end
     local values = self[k]
-
+    if type(values) == "string" then
+        return values
+    end
     return values[#values]
 end
 
@@ -117,19 +132,16 @@ end
 --- @return table a list of the provided values
 function Headers:get_all(key)
     local k = Headers.normalize_key(key or "")
+    local values = self[k]
+    if type(values) == "string" then
+        return {values}
+    end
     return self[k]
 end
 
 local Request = {}
 
 Request.__index = Request
-
-
-Request.__index = function (table, key)
-    if key == "headers" then
-        return Request.headers(table)
-    end
-end
 
 --- Parse the first line of an HTTP request
 local function parse_preamble(line)
@@ -139,8 +151,6 @@ local function parse_preamble(line)
             path = path,
             http_version = http_version,
             raw = line .. "\r\n",
-            headers = nil,
-            body = nil,
         }
     end
     return nil, string.format("Invalid http request first line: '%s'", line)
@@ -148,25 +158,29 @@ end
 
 --- Constructor from the provided incoming socket connection
 function Request.from(incoming)
-    local line, acc_err = incoming:receive()
+    local r = Request.new({socket = incoming})
+    assert(getmetatable(r) == Request)
+    local line, acc_err = Request._next_chunk(r)
     if acc_err then
         return nil, acc_err
     end
     local pre, pre_err = parse_preamble(line)
     if pre_err then
-        return nil, acc_err
+        return nil, pre_err
     end
-    setmetatable(pre, Request)
-    pre.parsed_headers = false
-    return pre
+    r.http_version = pre.http_version
+    r.method = pre.method
+    r.path = pre.path
+    r.raw = pre.raw
+    return r
 end
 
 --- Get the headers for this request
 --- parsing the incoming stream of headers
 --- if not already parsed
-function Request:headers()
-    if self.headers == nil then
-        local err = self:_parse_headers()
+function Request:get_headers()
+    if self.parsed_headers == false then
+        local err = Request._parse_headers(self)
         if err == nil then
             return err
         end
@@ -174,9 +188,9 @@ function Request:headers()
     return self.headers
 end
 
-function Request:_parse_headers()
+function Request:_parse_headers(r)
     while true do
-        local done, err = self:_parse_header()
+        local done, err = self:_parse_header(r)
         if err ~= nil then
             return err
         end
@@ -193,13 +207,13 @@ function Request:_parse_header()
         return nil, err
     end
     if self.headers == nil then
-        self.headers = header.Headers.new()
+        self.headers = Headers.new()
     end
     if line == "" then
         self:_append_raw("")
         return true
     else
-        self.headers:append_from(line)
+        self.headers:append_chunk(line)
     end
     return false
 end
@@ -213,7 +227,7 @@ function Request:_next_chunk()
 end
 
 function Request:_append_raw(line)
-    self.raw = self.raw .. line .. "\r\n"
+    self.raw = (self.raw or '') .. line .. "\r\n"
 end
 
 function Request:_append_body(line)
@@ -222,6 +236,15 @@ function Request:_append_body(line)
     else
         self.body = self.body .. line
     end
+end
+
+function Request.new(base)
+    local ret = base or {}
+    if ret.parsed_headers == nil then
+        ret.parsed_headers = false
+    end
+    setmetatable(ret, Request)
+    return ret
 end
 
 return {
