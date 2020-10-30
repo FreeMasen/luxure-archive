@@ -1,25 +1,6 @@
-local r = require 'luxure.request'
-local Request = r.Request
-local parse_preamble = r.testable.parse_preamble
-local serialize_header = r.testable.serialize_header
-local MockSocket = {}
-
-MockSocket.__index = MockSocket
-
-function MockSocket.new(inner)
-    local ret = {
-        inner = inner or {},
-    }
-    setmetatable(ret, MockSocket)
-    return ret
-end
-
-function MockSocket:receive()
-    if #self.inner == 0 then
-        return nil
-    end
-    return table.remove(self.inner, 1)
-end
+local headers = require 'luxure.headers'
+local Headers = headers.Headers
+local serialize_header = headers.serialize_header
 
 local normal_headers = {
     {"Accept: text/html", 'accept', "text/html"},
@@ -69,44 +50,31 @@ local normal_headers = {
     {"Warning: 199 Miscellaneous warning", 'warning', '199 Miscellaneous warning'},
     {"WWW-Authenticate: Basic", 'www_authenticate', 'Basic'},
 }
-
-
-describe('Request', function()
-    describe('parse_preamble', function()
-        it('GET / HTTP/1.1 should work', function()
-            local r, e = parse_preamble("GET / HTTP/1.1")
-            assert(e == nil)
-            assert(r.method == "GET")
-            assert(r.path == "/")
-            assert(r.http_version == "1.1")
-        end)
-        it('GET /things HTTP/2 should work', function()
-            local r, e = parse_preamble("GET /things HTTP/2")
-            assert(r.method == "GET", "expected method to be GET")
-            assert(r.path == "/things", "expected path to be /things")
-            assert(r.http_version == "2", "expected version to be 2")
-        end)
-        it('POST /stuff HTTP/2 should work', function()
-            local r, e = parse_preamble("POST /stuff HTTP/2")
-            assert(r.method == "POST", "expected method to be POST")
-            assert(r.path == "/stuff", "expected path to be /stuff")
-            assert(r.http_version == "2", "expected version to be 2")
-        end)
-    end)
-    describe('Request.headers', function ()
-        it('works', function ()
-            local inner = {'GET / HTTP/1.1 should work'}
+describe('Headers', function ()
+    describe("append_chunk", function()
+        it("All Standard headers", function()
+            local h = Headers.new()
             for _, set in ipairs(normal_headers) do
-                table.insert(inner, set[1])
-            end
-            table.insert(inner, '')
-            local r, e = Request.from(MockSocket.new(inner))
-            assert(e == nil, string.format('error in Request.from: %s', e))
-            r:get_headers()
-            for _, set in ipairs(normal_headers) do
+                local chunk = set[1]
                 local key = set[2]
                 local expected = set[3]
-                assert(r.headers[key] == expected, string.format("%s, found %s expected %s", key, r.headers[key], expected))
+                h:append_chunk(chunk)
+                assert(h[key] == expected, string.format('%s found %s expected %s', key, h[key], expected))
+            end
+        end)
+
+        it("Can handle multi line headers", function()
+            local h = Headers.new()
+            h:append_chunk("x-Multi-Line-Header: things and stuff")
+            h:append_chunk(" places and people")
+            assert(h.x_multi_line_header, "thinigs and stuff\nplaces and people")
+        end)
+    end)
+    describe('serialize_header', function ()
+        it('can handle normal header', function()
+            for _, set in ipairs(normal_headers) do
+                local header = serialize_header(set[2], set[3])
+                assert(header == set[1], string.format('expected %s found %s', set[1], header))
             end
         end)
     end)
