@@ -313,6 +313,19 @@ local function send_options_response(res, optsions, next)
     assert(false, 'not yet implemented')
 end
 
+
+local function append_methods(list, add)
+    local set = {}
+    for _, method in ipairs(list) do
+        set[method] = true
+    end
+    for _, method in ipairs(add) do
+        if set[method] == nil then
+            table.insert(list, method)
+        end
+    end
+end
+
 function Router:handle(req, res, out)
     local idx = 0
     local proto_host = get_proto_host(req.url) or ''
@@ -563,7 +576,7 @@ function Router:route(path)
 
 end
 
-function set_method(method)
+local function set_method(method)
     Router[method] = function(self, path, ...)
         local route = self:route(path)
         route[method].route(table.unpack(arg))
@@ -573,18 +586,6 @@ end
 set_method('all')
 for _, method in pairs(methods) do
     set_method(method)
-end
-
-local function append_methods(list, add)
-    local set = {}
-    for _, method in ipairs(list) do
-        set[method] = true
-    end
-    for _, method in ipairs(add) do
-        if set[method] == nil then
-            table.insert(list, method)
-        end
-    end
 end
 
 
