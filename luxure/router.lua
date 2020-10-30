@@ -1,6 +1,6 @@
 local Layer = require 'luxure.layer'
 local percent_decode = require 'luxure.utils'.percent_decode
-local resty_url = require 'resty.url'
+local net_url = require 'net.url'
 
 ---@class Route
 ---
@@ -11,10 +11,6 @@ local resty_url = require 'resty.url'
 local Route = {}
 
 Route.__index = Route
-
-Route.mt.__eq = function (lhs,rhs)
-    Route.matches(lhs, rhs)
-end
 
 ---construct a new Route parsing any route parameters in the process
 ---@param path string
@@ -167,7 +163,7 @@ local methods = {
     'UNSUBSCRIBE',
 }
 
-for _, method in methods do
+for _, method in ipairs(methods) do
     Route[string.lower(string.gsub(method, '-', '_'))] = function(self, ...)
         local handles = flatten(arg);
 
@@ -189,7 +185,7 @@ local function parse_url(req)
     if req._url ~= nil then
         return req._url
     end
-    local url, err = resty_url.parse(req.url or '')
+    local url, err = net_url.parse(req.url or '')
     if err then
         return nil, err
     end

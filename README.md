@@ -9,6 +9,8 @@ Currently this is all broken... hopefully it wont be soon
 ## Usage (intended...)
 
 ```lua
+-- define a global socket that has a luasocket API
+socket = require 'socket'
 local luxure = require 'luxure'
 
 local server = luxure.Server.new('0.0.0.0') --optionally provide a port here
