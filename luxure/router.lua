@@ -280,12 +280,9 @@ function Router:param(name, fn)
     return self
 end
 
--- possible semantic issue here around `this`
--- may need to add caller argument to, also
--- `arguments` may need some attention
-local function wrap(old, fn)
+local function wrap(caller, old, fn)
     return function(...)
-        fn(old, ...)
+        fn(caller, old, ...)
     end
 end
 
@@ -335,7 +332,7 @@ function Router:handle(req, res, out)
     local done = restore(self, out, req, 'base_url', 'next', 'params')
     if req.method == 'OPTIONS' then
         -- for options requests, respond with a default if nothing else responds
-        done = wrap(done, function(old, err)
+        done = wrap(self, done, function(old, err)
             if err or #options == 0 then
                 return old(err)
             end
