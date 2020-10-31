@@ -20,10 +20,11 @@ function Route.new(path)
         stack = {},
         methods = {}
     }
-    
+
     setmetatable(base, Route)
     return base
 end
+
 function Route:_handles_method(method)
     if self.methods.all ~= nil then
         return true
