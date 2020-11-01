@@ -1,6 +1,7 @@
-local headers = require 'headers'
+local headers = require 'luxure.headers'
 local statuses = require 'luxure.status'
 local Response = {}
+Response.__index = Response
 
 
 --- create a response for to a corisponding request
@@ -8,7 +9,7 @@ local Response = {}
 function Response.new(outgoing)
     local base = {
         headers = headers.Headers.new(),
-        status = 200,
+        _status = 200,
         body = "",
         http_version = "1.1",
         outgoing = outgoing,
@@ -21,7 +22,7 @@ end
 --- @param n number the 3 digit status
 function Response:status(n)
     assert(type(n) == 'number', string.format('http status must be a number, found %s', type(n)))
-    self.status = n
+    self._status = n
     return self
 end
 
@@ -34,9 +35,9 @@ function Response:content_type(mime)
 end
 
 function Response:_serialize()
-    local s = string.format('HTTP/%s %s %s\r\n', self.http_version, self.status, statuses[self.status] or '')
-    self.headers:append('content-length', string.format('%i', #self.body))
-    self.headers:append('server', 'Luxure')
+    local s = string.format('HTTP/%s %s %s\r\n', self.http_version, self._status, statuses[self._status] or '')
+    self.headers:append('Content-Length', string.format('%i', #self.body))
+    self.headers:append('Server', 'Luxure')
     s = s .. self.headers:serialize() .. '\r\n'
     s = s .. (self.body or "")
     return s
@@ -57,9 +58,9 @@ end
 --- complete this http request by sending this response as text
 function Response:send(s)
     if type(s) == 'string' then
-        self.append_body(s)
+        self:append_body(s)
     end
-    self.outgoing:send(self._serialize())
+    self.outgoing:send(self:_serialize())
 end
 
 return {

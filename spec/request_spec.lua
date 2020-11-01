@@ -2,24 +2,7 @@ local r = require 'luxure.request'
 local Request = r.Request
 local parse_preamble = r.testable.parse_preamble
 local serialize_header = r.testable.serialize_header
-local MockSocket = {}
-
-MockSocket.__index = MockSocket
-
-function MockSocket.new(inner)
-    local ret = {
-        inner = inner or {},
-    }
-    setmetatable(ret, MockSocket)
-    return ret
-end
-
-function MockSocket:receive()
-    if #self.inner == 0 then
-        return nil
-    end
-    return table.remove(self.inner, 1)
-end
+local MockSocket = require 'spec.mock_socket'
 
 local normal_headers = {
     {"Accept: text/html", 'accept', "text/html"},
