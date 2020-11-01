@@ -6,8 +6,8 @@ local net_url = require 'net.url'
 ---
 --- A single instance of a route
 ---@field path string raw string that comprises this path
----@field segments table list of ids or path segments, each segment may be a parameter if preceded by a :
----@field vars table list of variables that will be parsed from the segments field
+---@field stack table list of layers for this path
+---@field methods table list of http methods assigned to this path
 local Route = {}
 
 Route.__index = Route
