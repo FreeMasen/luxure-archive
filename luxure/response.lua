@@ -1,5 +1,10 @@
 local headers = require 'luxure.headers'
 local statuses = require 'luxure.status'
+---@class Response
+---@field headers headers.Headers The HTTP headers for this response
+---@field _status number The HTTP status code for this response
+---@field body string the contents of the response body
+---@field outgoing table The socket this response will send on
 local Response = {}
 Response.__index = Response
 

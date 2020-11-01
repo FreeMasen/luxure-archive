@@ -1,4 +1,4 @@
-local MockSocket = require 'spec.mock_socket'
+local MockSocket = require 'spec.mock_socket'.MockSocket
 local Response = require 'luxure.response'.Response
 local utils = require 'luxure.utils'
 

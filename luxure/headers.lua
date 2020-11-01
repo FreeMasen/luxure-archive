@@ -1,3 +1,4 @@
+---@class Headers
 ---A map of the key value pairs from the header portion
 ---of an HTTP request
 local Headers = {}

@@ -1,34 +1,44 @@
-
+local Route = require 'luxure.route'.Route
+---@class Router
+---@field routes table List of Routes registered
 local Router = {}
 
 Router.__index = Router
 
-function Router.new(options)
-    local opts = options or {}
+function Router.new()
     local base = {
-        params = {},
-        _params = {},
-        case_sensitive = opts.case_sensitive,
-        merge_params = opts.merge_params,
-        strict = opts.strict,
-        stack = {}
+        routes = {},
     }
     setmetatable(base, Router)
     return base
 end
-
-function Router:route(path)
-
-end
-
-function Router:register_handler(path, method, callback)
-    if self.handlers[path] == nil then
-        self.handlers[path] = {
-            [method] = callback
-        }
-    else
-        self.handlers[path][method] = callback
+---Dispatch a request to the approparte Route
+---@param self Router
+---@param req Request
+---@param res Response
+function Router:route(req, res)
+    print('Router:route')
+    for _, route in pairs(self.routes) do
+        local matched, params = route:matches(req.url)
+        if matched and route:handles_method(req.method) then
+            req.params = params
+            route:handle(req, res)
+            return true
+        end
     end
+    print('route missed...')
+    return false
+end
+---Register a single route
+---@param self Router
+---@param path string The route for this request
+---@param method string the HTTP method for this request
+---@param callback function(luxure.request.Request, luxure.response.Response) The callback this route will use to handle requests
+function Router:register_handler(path, method, callback)
+    if self.routes[path] == nil then
+        self.routes[path] = Route.new(path)
+    end
+    self.routes[path].methods[method] = callback
 end
 
 

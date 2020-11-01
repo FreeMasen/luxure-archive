@@ -2,7 +2,7 @@ local r = require 'luxure.request'
 local Request = r.Request
 local parse_preamble = r.testable.parse_preamble
 local serialize_header = r.testable.serialize_header
-local MockSocket = require 'spec.mock_socket'
+local MockSocket = require 'spec.mock_socket'.MockSocket
 
 local normal_headers = {
     {"Accept: text/html", 'accept', "text/html"},
@@ -60,19 +60,19 @@ describe('Request', function()
             local r, e = parse_preamble("GET / HTTP/1.1")
             assert(e == nil)
             assert(r.method == "GET")
-            assert(r.path == "/")
+            assert(r.url.path == "/")
             assert(r.http_version == "1.1")
         end)
         it('GET /things HTTP/2 should work', function()
             local r, e = parse_preamble("GET /things HTTP/2")
             assert(r.method == "GET", "expected method to be GET")
-            assert(r.path == "/things", "expected path to be /things")
+            assert(r.url.path == "/things", "expected path to be /things")
             assert(r.http_version == "2", "expected version to be 2")
         end)
         it('POST /stuff HTTP/2 should work', function()
             local r, e = parse_preamble("POST /stuff HTTP/2")
             assert(r.method == "POST", "expected method to be POST")
-            assert(r.path == "/stuff", "expected path to be /stuff")
+            assert(r.url.path == "/stuff", "expected path to be /stuff")
             assert(r.http_version == "2", "expected version to be 2")
         end)
     end)
@@ -83,7 +83,7 @@ describe('Request', function()
                 table.insert(inner, set[1])
             end
             table.insert(inner, '')
-            local r, e = Request.from(MockSocket.new(inner))
+            local r, e = Request.new(MockSocket.new(inner))
             assert(e == nil, string.format('error in Request.from: %s', e))
             r:get_headers()
             for _, set in ipairs(normal_headers) do

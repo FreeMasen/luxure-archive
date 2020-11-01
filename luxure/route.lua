@@ -1,5 +1,3 @@
-local Layer = require 'luxure.layer'
-local utils = require 'luxure.utils'
 local net_url = require 'net.url'
 
 ---@class Route
@@ -37,14 +35,14 @@ function Route.new(path)
     return url
 end
 
-function Route:_handles_method(method)
+function Route:handles_method(method)
     return self.methods[method] ~= nil
 end
 
-function Route:matches(path)
+function Route:matches(url)
     local params = {}
     local i = 1
-    for part in string.gmatch(path, "[^/]+") do
+    for part in string.gmatch(url.path, "[^/]+") do
         local segment = self.segments[i]
         if segment == nil then
             return false
@@ -57,6 +55,12 @@ function Route:matches(path)
         i = i + 1
     end
     return true, params
+end
+
+
+function Route:handle(req, res)
+    assert(self.methods[req.method], 'attempt to dispatch an unhandled method')
+    self.methods[req.method](req, res)
 end
 
 return {

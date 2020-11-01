@@ -1,11 +1,11 @@
 package = "luxure"
 version = "dev-1"
 source = {
-   url = "*** please add URL for source tarball, zip or repository here ***"
+   url = "https://github.com/FreeMasen/luxure"
 }
 description = {
-   homepage = "*** please enter a project homepage ***",
-   license = "*** please specify a license ***"
+   homepage = "An HTTP framework for Lua",
+   license = "MIT"
 }
 dependencies = {
    "lua >= 5.1",
@@ -20,5 +20,9 @@ build = {
       ["luxure.router"] = "luxure/router.lua",
       ["luxure.server"] = "luxure/server.lua",
       ["luxure.utils"] = "luxure/utils.lua",
+      ["luxure.headers"] = "luxure/headers.lua",
+      ["luxure.methods"] = "luxure/methods.lua",
+      ["luxure.route"] = "luxure/route.lua",
+      ["luxure.status"] = "luxure/status.lua",
    }
 }

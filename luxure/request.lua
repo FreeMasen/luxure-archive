@@ -1,6 +1,12 @@
-local h = require 'luxure.headers'
-local Headers = h.Headers
-
+local net_url = require 'net.url'
+local Headers = require 'luxure.headers'.Headers
+---@class Request
+---@field method string the HTTP method for this request
+---@field url table The parse url of this request
+---@field http_version string The http version from the request preamble
+---@field headers Headers The HTTP headers for this request
+---@field body string The contents of the request
+---@field raw string the raw request contents
 local Request = {}
 
 Request.__index = Request
@@ -10,7 +16,7 @@ local function parse_preamble(line)
     for method, path, http_version in string.gmatch(line, "([A-Z]+) (.+) HTTP/([0-9.]+)") do
         return {
             method = method,
-            path = path,
+            url = net_url.parse(path),
             http_version = http_version,
             raw = line .. "\r\n",
         }
@@ -20,21 +26,7 @@ end
 
 --- Constructor from the provided incoming socket connection
 function Request.from(incoming)
-    local r = Request.new({socket = incoming})
-    assert(getmetatable(r) == Request)
-    local line, acc_err = Request._next_chunk(r)
-    if acc_err then
-        return nil, acc_err
-    end
-    local pre, pre_err = parse_preamble(line)
-    if pre_err then
-        return nil, pre_err
-    end
-    r.http_version = pre.http_version
-    r.method = pre.method
-    r.path = pre.path
-    r.raw = pre.raw
-    return r
+    
 end
 
 --- Get the headers for this request
@@ -100,13 +92,25 @@ function Request:_append_body(line)
     end
 end
 
-function Request.new(base)
-    local ret = base or {}
-    if ret.parsed_headers == nil then
-        ret.parsed_headers = false
+function Request.new(socket)
+    local r = {
+        socket = socket,
+        parsed_headers = false,
+    }
+    setmetatable(r, Request)
+    local line, acc_err = r:_next_chunk()
+    if acc_err then
+        return nil, acc_err
     end
-    setmetatable(ret, Request)
-    return ret
+    local pre, pre_err = parse_preamble(line)
+    if pre_err then
+        return nil, pre_err
+    end
+    r.http_version = pre.http_version
+    r.method = pre.method
+    r.url = pre.url
+    r.raw = pre.raw
+    return r
 end
 
 return {
