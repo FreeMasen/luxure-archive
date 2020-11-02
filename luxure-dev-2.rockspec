@@ -1,5 +1,5 @@
 package = "luxure"
-version = "dev-1"
+version = "dev-2"
 source = {
    url = "https://github.com/FreeMasen/luxure"
 }
