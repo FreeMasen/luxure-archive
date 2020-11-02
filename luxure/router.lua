@@ -17,7 +17,6 @@ end
 ---@param req Request
 ---@param res Response
 function Router:route(req, res)
-    print('Router:route')
     for _, route in pairs(self.routes) do
         local matched, params = route:matches(req.url)
         if matched and route:handles_method(req.method) then
@@ -26,7 +25,6 @@ function Router:route(req, res)
             return true
         end
     end
-    print('route missed...')
     return false
 end
 ---Register a single route

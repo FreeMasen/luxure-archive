@@ -53,7 +53,6 @@ local normal_headers = {
     {"WWW-Authenticate: Basic", 'www_authenticate', 'Basic'},
 }
 
-
 describe('Request', function()
     describe('parse_preamble', function()
         it('GET / HTTP/1.1 should work', function()
@@ -85,12 +84,24 @@ describe('Request', function()
             table.insert(inner, '')
             local r, e = Request.new(MockSocket.new(inner))
             assert(e == nil, string.format('error in Request.from: %s', e))
-            r:get_headers()
             for _, set in ipairs(normal_headers) do
                 local key = set[2]
                 local expected = set[3]
                 assert(r.headers[key] == expected, string.format("%s, found %s expected %s", key, r.headers[key], expected))
             end
+        end)
+    end)
+    describe('Request.body', function()
+        it('Will get filled in when needed', function()
+            local lines = {
+                'POST / HTTP/1.1 should work',
+                'Content-Length: 4',
+                '',
+                'asdfg',
+            }
+            local r, e = Request.new(MockSocket.new(lines))
+            assert(e == nil)
+            assert(r.body == 'asdfg', 'Expected asdfg, found ' .. r.body)
         end)
     end)
 end)

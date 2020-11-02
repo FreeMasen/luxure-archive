@@ -41,8 +41,13 @@ end
 
 function Route:matches(url)
     local params = {}
-    local i = 1
+    local i = 0
+    local path = url.path
+    if string.find(url.path, '/$') then
+        path = string.sub(path, 1, -2)
+    end
     for part in string.gmatch(url.path, "[^/]+") do
+        i = i + 1
         local segment = self.segments[i]
         if segment == nil then
             return false
@@ -52,9 +57,8 @@ function Route:matches(url)
         elseif segment.id ~= part then
             return false
         end
-        i = i + 1
     end
-    return true, params
+    return #self.segments == i, params
 end
 
 

@@ -9,7 +9,21 @@ local Headers = require 'luxure.headers'.Headers
 ---@field raw string the raw request contents
 local Request = {}
 
-Request.__index = Request
+Request.__index = function(table, key)
+    if key == 'body' then
+        if table._body == nil then
+            table:fill_body()
+        end
+        return table._body
+    elseif key == 'headers' then
+        if not table.parsed_headers then
+            table:_fill_headers()
+        end
+        return table._headers
+    else
+        return Request[key]
+    end
+end
 
 --- Parse the first line of an HTTP request
 local function parse_preamble(line)
@@ -18,15 +32,12 @@ local function parse_preamble(line)
             method = method,
             url = net_url.parse(path),
             http_version = http_version,
+            _body = nil,
+            _headers = nil,
             raw = line .. "\r\n",
         }
     end
     return nil, string.format("Invalid http request first line: '%s'", line)
-end
-
---- Constructor from the provided incoming socket connection
-function Request.from(incoming)
-    
 end
 
 --- Get the headers for this request
@@ -34,7 +45,7 @@ end
 --- if not already parsed
 function Request:get_headers()
     if self.parsed_headers == false then
-        local err = Request._parse_headers(self)
+        local err = Request._fill_headers(self)
         if err == nil then
             return err
         end
@@ -42,9 +53,9 @@ function Request:get_headers()
     return self.headers
 end
 
-function Request:_parse_headers(r)
+function Request:_fill_headers()
     while true do
-        local done, err = self:_parse_header(r)
+        local done, err = self:_parse_header()
         if err ~= nil then
             return err
         end
@@ -60,14 +71,14 @@ function Request:_parse_header()
     if err ~= nil then
         return nil, err
     end
-    if self.headers == nil then
-        self.headers = Headers.new()
+    if self._headers == nil then
+        self._headers = Headers.new()
     end
     if line == "" then
         self:_append_raw("")
         return true
     else
-        self.headers:append_chunk(line)
+        self._headers:append_chunk(line)
     end
     return false
 end
@@ -85,10 +96,19 @@ function Request:_append_raw(line)
 end
 
 function Request:_append_body(line)
-    if self.body == nil then
-        self.body = line
+    if self._body == nil then
+        self._body = line
     else
-        self.body = self.body .. line
+        self._body = self.body .. line
+    end
+end
+
+function Request:fill_body()
+    if self.parsed_headers then
+        self:_fill_headers()
+    end
+    if self.headers.content_length ~= nil then
+        local body = self.socket:receive(self.headers.content_length)
     end
 end
 
