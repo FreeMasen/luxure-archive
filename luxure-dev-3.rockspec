@@ -1,7 +1,8 @@
 package = "luxure"
-version = "dev-2"
+version = "dev-3"
 source = {
-   url = "https://github.com/FreeMasen/luxure"
+   url = "https://github.com/FreeMasen/luxure",
+   branch = "make-it-work"
 }
 description = {
    homepage = "An HTTP framework for Lua",
