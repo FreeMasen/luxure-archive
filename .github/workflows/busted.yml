@@ -17,4 +17,11 @@ jobs:
       - uses: xpol/setup-lua@v0.2
       - uses: leafo/gh-actions-luarocks@v3
       - name: test
-        run: luarocks install busted && luarocks install net-url && busted
+        run: |
+          luarocks install busted \
+          && luarocks install net-url \
+          && luarocks install luacov \
+          && busted -c \
+          && bash <(curl -s https://codecov.io/bash)
+        env: 
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
