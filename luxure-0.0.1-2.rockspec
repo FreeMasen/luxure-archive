@@ -2,7 +2,7 @@ package = "luxure"
 version = "0.0.1-2"
 source = {
    url = "https://github.com/FreeMasen/luxure",
-   tab = "0.0.1"
+   tag = "0.0.1"
 }
 description = {
    homepage = "https://github.com/FreeMasen/luxure",
