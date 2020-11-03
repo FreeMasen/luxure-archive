@@ -1,13 +1,28 @@
+
+local function format_non_table(v)
+    if v == nil then
+        return 'nil'
+    end
+    if type(v) == 'string' then return string.format('\'%s\'', v) end
+    return string.format('%s', v)
+end
+
 local function table_string(v, pre)
     pre = pre or ""
-    local ret = pre .. "{"
+    if type(v) ~= 'table' then
+        return format_non_table(v)
+    elseif next(v) == nil then
+        return '{ }'
+    end
+    local ret = "{"
     local orig_pre = pre
     pre = pre .. "  "
     for key, value in pairs(v) do
+        ret = ret .. '\n' .. pre .. key .. ' = '
         if type(value) == "table" then
-            ret = string.format("%s\n%s%s: %s", ret, pre, key, table_string(value, pre .. "  "))
+            ret = ret .. table_string(value, pre .. "  ")
         else
-            ret = string.format("%s\n%s%s: %s", ret, pre, key, value)
+            ret = ret .. format_non_table(value)
         end
     end
     return string.format("%s\n%s}", ret, orig_pre)

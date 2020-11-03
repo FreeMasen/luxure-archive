@@ -1,3 +1,4 @@
+---@class Headers
 ---A map of the key value pairs from the header portion
 ---of an HTTP request
 local Headers = {}
@@ -40,6 +41,7 @@ function Headers:serialize()
     for key, value in pairs(self) do
         ret = ret .. serialize_header(key, value) .. "\r\n"
     end
+    return ret
 end
 
 function Headers:append_chunk(text)
