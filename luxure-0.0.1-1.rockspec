@@ -2,7 +2,6 @@ package = "luxure"
 version = "0.0.1-1"
 source = {
    url = "https://github.com/FreeMasen/luxure",
-   branch = "make-it-work"
 }
 description = {
    homepage = "An HTTP framework for Lua",
@@ -15,7 +14,7 @@ dependencies = {
 build = {
    type = "builtin",
    modules = {
-      luxure = "luxure/luxure.lua",
+      luxure = "luxure/init.lua",
       ["luxure.request"] = "luxure/request.lua",
       ["luxure.response"] = "luxure/response.lua",
       ["luxure.router"] = "luxure/router.lua",
