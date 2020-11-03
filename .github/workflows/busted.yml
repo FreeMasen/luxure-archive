@@ -19,16 +19,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - name: Lua Action
-        # You may pin to the exact commit or the version.
-        # uses: MilesChou/lua-action@29d9d758438e3c8856f521d4e3ae7b012893cde0
-        uses: MilesChou/lua-action@v0.0.1
-      - name: Install LuaRocks
-        # You may pin to the exact commit or the version.
-        # uses: leafo/gh-actions-luarocks@1638dcfaa6680abaf0f1150838c16ef0db955928
-        uses: leafo/gh-actions-luarocks@v3
-      - name: Install busted
-        run: luarocks install busted && luarocks install net-url
-      - name: Run Tests
-        run: busted
+      - uses: MilesChou/lua-action@v0.0.1
+      - uses: leafo/gh-actions-luarocks@v3
+      - name: test
+        run: luarocks install busted && luarocks install net-url && busted
