@@ -1,5 +1,5 @@
 package = "luxure"
-version = "dev-3"
+version = "0.0.1-alpah1"
 source = {
    url = "https://github.com/FreeMasen/luxure",
    branch = "make-it-work"
