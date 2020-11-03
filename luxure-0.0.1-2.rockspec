@@ -1,10 +1,11 @@
 package = "luxure"
-version = "0.0.1-1"
+version = "0.0.1-2"
 source = {
    url = "https://github.com/FreeMasen/luxure",
+   tab = "0.0.1"
 }
 description = {
-   homepage = "An HTTP framework for Lua",
+   homepage = "https://github.com/FreeMasen/luxure",
    license = "MIT"
 }
 dependencies = {
