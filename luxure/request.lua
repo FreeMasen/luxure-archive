@@ -9,21 +9,7 @@ local Headers = require 'luxure.headers'.Headers
 ---@field raw string the raw request contents
 local Request = {}
 
-Request.__index = function(table, key)
-    if key == 'body' then
-        if table._body == nil then
-            table:fill_body()
-        end
-        return table._body
-    elseif key == 'headers' then
-        if not table.parsed_headers then
-            table:_fill_headers()
-        end
-        return table._headers
-    else
-        return Request[key]
-    end
-end
+Request.__index = Request
 
 --- Parse the first line of an HTTP request
 local function parse_preamble(line)
@@ -45,12 +31,12 @@ end
 --- if not already parsed
 function Request:get_headers()
     if self.parsed_headers == false then
-        local err = Request._fill_headers(self)
-        if err == nil then
-            return err
+        local err = self:_fill_headers()
+        if err ~= nil then
+            return nil, err
         end
     end
-    return self.headers
+    return self._headers
 end
 
 function Request:_fill_headers()
@@ -103,12 +89,20 @@ function Request:_append_body(line)
     end
 end
 
-function Request:fill_body()
-    if self.parsed_headers then
-        self:_fill_headers()
+function Request:get_body()
+    if not self._received_body then
+        self:_fill_body()
     end
-    if self.headers.content_length ~= nil then
-        local body = self.socket:receive(self.headers.content_length)
+    return self._body
+end
+
+function Request:_fill_body()
+    local headers, err = self:get_headers()
+    if err then
+        return err
+    end
+    if headers.content_length ~= nil then
+        self._body = self.socket:receive(headers.content_length)
     end
 end
 

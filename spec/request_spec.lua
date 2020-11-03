@@ -84,10 +84,14 @@ describe('Request', function()
             table.insert(inner, '')
             local r, e = Request.new(MockSocket.new(inner))
             assert(e == nil, string.format('error in Request.from: %s', e))
+            local headers, e2 = r:get_headers()
+            assert(e2 == nil, string.format('error in get_headers %s', e2))
+            local table_string = require 'luxure.utils'.table_string
+            assert(headers, string.format('headers was nil: %s', table_string(r)))
             for _, set in ipairs(normal_headers) do
                 local key = set[2]
                 local expected = set[3]
-                assert(r.headers[key] == expected, string.format("%s, found %s expected %s", key, r.headers[key], expected))
+                assert(headers[key] == expected, string.format("%s, found %s expected %s", key, headers[key], expected))
             end
         end)
     end)
@@ -100,8 +104,10 @@ describe('Request', function()
                 'asdfg',
             }
             local r, e = Request.new(MockSocket.new(lines))
-            assert(e == nil)
-            assert(r.body == 'asdfg', 'Expected asdfg, found ' .. r.body)
+            assert(e == nil, 'error parsing preamble ' .. (e or 'nil'))
+            local e2 = r:_fill_body()
+            assert(e2 == nil, 'error parsing body: ' .. (e2 or 'nil'))
+            assert(r._body == 'asdfg', 'Expected asdfg, found ' .. (r._body or 'nil'))
         end)
     end)
 end)
