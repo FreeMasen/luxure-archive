@@ -15,7 +15,6 @@ Server.__index = Server
 ---Constructor for a Server
 ---@param socket_mod table This should look something like luasocket
 function Server.new(socket_mod)
-    print('Server.new')
     local base = {
         socket_mod = socket_mod,
         router = Router.new(),
