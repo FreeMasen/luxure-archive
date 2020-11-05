@@ -38,6 +38,11 @@ server:post('/hello', function(req, res)
     res:send(string.format('Hello %s!', req.body.name))
 end)
 
+-- This endpoint will always return 500
+server:get('/fail', function()
+    assert(false)
+end)
+
 -- define a parameterized GET endpoint, here :name will
 -- be matched on any request /hello/(.+) and whatever
 -- value is after /hello/ will populate `req.params.name`

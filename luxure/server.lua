@@ -9,10 +9,13 @@ local methods = require 'luxure.methods'
 ---@field middleware table List of middleware callbacks
 ---@field ip string defaults to '0.0.0.0'
 local Server = {}
+
 Server.__index = Server
+
 ---Constructor for a Server
 ---@param socket_mod table This should look something like luasocket
 function Server.new(socket_mod)
+    print('Server.new')
     local base = {
         socket_mod = socket_mod,
         router = Router.new(),
@@ -55,26 +58,35 @@ function Server:use(middleware)
     }
 end
 
+function Server:route(req, res)
+    local handled
+    if self.middleware then
+        handled = self.middleware.fn(req, res, self.middleware.next)
+    else
+        handled = self.router:route(req, res)
+    end
+    return handled
+end
+
 ---A single step in the Server run loop
 function Server:tick()
     local incoming = assert(self.sock:accept())
     local req = Request.new(incoming)
     local res = Response.new(incoming)
-
-    if self.middleware ~= nil then
-        self.middleware.fn(req, res, self.middleware.next)
-    else
-        self.router:route(req, res)
+    local success = pcall(self.route, self, req, res)
+    if not success then
+        local r, s, a = incoming:getstats()
+        if s == 0 then
+            res:status(500)
+            res:send()
+        end
     end
+    incoming:close()
 end
 ---Start this server, blocking forever
 function Server:run()
     while true do
         self:tick()
-        -- local success, msg = pcall(Server.tick, self)
-        -- if not success then
-        --     print(string.format('error in tick: %s', msg))
-        -- end
     end
 end
 
