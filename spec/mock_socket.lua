@@ -3,10 +3,21 @@ MockSocket.__index = MockSocket
 
 function MockSocket.new(inner)
     local ret = {
+        recvd = 0,
+        sent = 0,
         inner = inner or {},
+        open = true,
     }
     setmetatable(ret, MockSocket)
     return ret
+end
+
+function MockSocket:getstats()
+    return self.recvd, self.sent
+end
+
+function MockSocket:close()
+    self.open = false
 end
 
 function MockSocket.new_with_preamble(method, path)
@@ -19,11 +30,14 @@ function MockSocket:receive()
     if #self.inner == 0 then
         return nil
     end
-    return table.remove(self.inner, 1)
+    local part = table.remove(self.inner, 1)
+    self.recvd = self.recvd + #(part or "")
+    return part
 end
 
 function MockSocket:send(s)
     self.inner = self.inner or {}
+    self.sent = self.sent + #(s or "")
     table.insert(self.inner, s)
 end
 

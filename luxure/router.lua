@@ -25,6 +25,12 @@ function Router:route(req, res)
             return true
         end
     end
+
+    local r, s, a = res.outgoing:getstats()
+    if s == 0 then
+        res:status(404)
+        res:send()
+    end
     return false
 end
 ---Register a single route
