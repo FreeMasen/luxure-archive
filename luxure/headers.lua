@@ -48,18 +48,12 @@ function Headers:serialize()
 end
 
 function Headers:append_chunk(text)
-    if string.match(text, "^\\s+") ~= nil then
+    if string.match(text, "^%s+") ~= nil then
+        print('found whitespace prefix')
         if self.last_key == nil then
             return "Continuation with no key"
         end
-        local ty = type(self[self.last_key])
-        if ty == "string" then
-            self[self.last_key] = {self[self.last_key], text}
-        elseif ty == "table" then
-            table.insert(self[self.last_key], text)
-        else
-            self[self.last_key] = text
-        end
+        self[self.last_key] = string.format('%s %s', self[self.last_key], text)
         return
     end
     for raw_key, value in string.gmatch(text, "([0-9a-zA-Z\\-]+): (.+);?") do
