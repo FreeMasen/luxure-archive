@@ -6,8 +6,10 @@ local Headers = {}
 Headers.__index = Headers
 
 local function _append(t, key, value)
-    if t[key] == nil then
-        t[key] = {value}
+    if not t[key] then
+        t[key] = value
+    elseif type(t[key]) == 'string' then
+        t[key] = {t[key], value}
     else
         table.insert(t[key], value)
     end
@@ -98,7 +100,7 @@ end
 ---
 --- @param text string
 function Headers:append_from(text)
-    for raw_key, value in string.gmatch(text, "(a-zA-Z\\-): (.+)") do
+    for raw_key, value in string.gmatch(text, "([a-zA-Z\\-]+): (.+)") do
         local key = Headers.normalize_key(raw_key)
         self:append(key, value)
     end
@@ -129,14 +131,12 @@ end
 --- @return string
 function Headers:get_one(key)
     local k = Headers.normalize_key(key or "")
-    if self[k] == nil then
-        return nil
+    local value = self[k]
+    if type(value) == 'table' then
+        return value[#value]
+    else
+        return value
     end
-    local values = self[k]
-    if type(values) == "string" then
-        return values
-    end
-    return values[#values]
 end
 
 --- Get a header from the map of headers

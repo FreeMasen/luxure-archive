@@ -1,6 +1,7 @@
 local headers = require 'luxure.headers'
 local Headers = headers.Headers
 local serialize_header = headers.serialize_header
+local utils = require 'luxure.utils'
 
 local normal_headers = {
     {"Accept: text/html", 'accept', "text/html"},
@@ -62,7 +63,37 @@ describe('Headers', function ()
                 assert(h[key] == expected, string.format('%s found %s expected %s', key, h[key], expected))
             end
         end)
-
+        it('from_chunk', function()
+            local h = Headers.from_chunk('Accept: application/json')
+            assert(h.accept == 'application/json', string.format('expected application/json, found %s', h.accept))
+        end)
+        it('append_from', function()
+            local h = Headers.new()
+            h:append_from('Accept: application/json')
+            assert(h.accept == 'application/json', string.format('expected application/json, found %s', h.accept))
+        end)
+        it('append', function()
+            local h = Headers.new()
+            h:append('accept', 'application/json1')
+            assert(h.accept == 'application/json1', string.format('expected application/json, found %s', h.accept))
+            h:append('accept', 'application/json2')
+            assert(h.accept[1] == 'application/json1', string.format('expected application/json1, found %s', h.accept))
+            assert(h.accept[2] == 'application/json2', string.format('expected application/json2, found %s', h.accept))
+        end)
+        it('get_one', function()
+            local h = Headers.new()
+            h:append('accept', 'application/json1')
+            h:append('accept', 'application/json2')
+            assert(h:get_one('accept') == 'application/json2', string.format('expected application/json1, found %s', h:get_one('accept')))
+        end)
+        it('get_all', function()
+            local h = Headers.new()
+            h:append('accept', 'application/json1')
+            h:append('accept', 'application/json2')
+            local table = h:get_all('accept')
+            assert(table[1] == 'application/json1', string.format('expected application/json1, found %s', table[1]))
+            assert(table[2] == 'application/json2', string.format('expected application/json1, found %s', table[2]))
+        end)
         it("Can handle multi line headers", function()
             local h = Headers.new()
             h:append_chunk("x-Multi-Line-Header: things and stuff")
