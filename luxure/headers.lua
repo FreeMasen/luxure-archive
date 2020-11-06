@@ -49,7 +49,6 @@ end
 
 function Headers:append_chunk(text)
     if string.match(text, "^%s+") ~= nil then
-        print('found whitespace prefix')
         if self.last_key == nil then
             return "Continuation with no key"
         end

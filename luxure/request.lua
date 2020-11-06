@@ -87,7 +87,7 @@ function Request:_append_body(line)
     else
         self._body = self.body .. line
     end
-end
+end 
 
 function Request:get_body()
     if not self._received_body then
@@ -104,6 +104,7 @@ function Request:_fill_body()
     if headers.content_length ~= nil then
         self._body = self.socket:receive(headers.content_length)
     end
+    self._received_body = true
 end
 
 function Request.new(socket)

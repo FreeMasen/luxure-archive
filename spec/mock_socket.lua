@@ -28,7 +28,7 @@ end
 
 function MockSocket:receive()
     if #self.inner == 0 then
-        return nil
+        return nil, 'empty'
     end
     local part = table.remove(self.inner, 1)
     self.recvd = self.recvd + #(part or "")
