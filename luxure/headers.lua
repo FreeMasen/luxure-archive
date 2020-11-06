@@ -20,13 +20,14 @@ end
 ---@param value string
 ---@return string
 local function serialize_header(key, value)
+    local utils = require 'luxure.utils'
     if type(value) == "table" then
         value = value[#value]
     end
     -- special case for MD5
     key = string.gsub(key, 'md5', 'mD5')
     -- special case for ETag
-    key = string.gsub(key, 'etag', 'eTag')
+    key = string.gsub(key, 'etag', 'ETag')
     if #key < 3 then
         return string.format("%s: %s", key:upper(), value)
     end
