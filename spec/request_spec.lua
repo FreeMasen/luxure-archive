@@ -100,7 +100,7 @@ describe('Request', function()
         end)
     end)
     describe('Request.body', function()
-        it('Will get filled in when needed', function()
+        it('_fill_body', function()
             local lines = {
                 'POST / HTTP/1.1 should work',
                 'Content-Length: 4',
@@ -112,6 +112,19 @@ describe('Request', function()
             local e2 = r:_fill_body()
             assert(e2 == nil, 'error parsing body: ' .. (e2 or 'nil'))
             assert(r._body == 'asdfg', 'Expected asdfg, found ' .. (r._body or 'nil'))
+        end)
+        it('get_body', function()
+            local lines = {
+                'POST / HTTP/1.1 should work',
+                'Content-Length: 4',
+                '',
+                'asdfg',
+            }
+            local r, e = Request.new(MockSocket.new(lines))
+            assert(e == nil, 'error parsing preamble ' .. (e or 'nil'))
+            local b, e2 = r:get_body()
+            assert(e2 == nil, 'error parsing body: ' .. (e2 or 'nil'))
+            assert(b == 'asdfg', 'Expected asdfg, found ' .. (r._body or 'nil'))
         end)
     end)
 end)

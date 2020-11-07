@@ -52,25 +52,13 @@ function Headers:append_chunk(text)
         if self.last_key == nil then
             return "Continuation with no key"
         end
-        self[self.last_key] = string.format('%s %s', self[self.last_key], text)
+        local existing = self[self.last_key]
+        self[self.last_key] = string.format('%s %s', existing, text)
         return
     end
     for raw_key, value in string.gmatch(text, "([0-9a-zA-Z\\-]+): (.+);?") do
         local key = Headers.normalize_key(raw_key)
-        self.last_key = key
-        self[key] = value
-    end
-end
-
----Append a key value pair to this collection
----@param self table
----@param key string
----@param value string
-function Headers:append(key, value)
-    if self[key] == nil then
-        self[key] = value
-    else
-        table.insert(self[key], value)
+        self:append(key, value)
     end
 end
 
@@ -113,6 +101,7 @@ end
 --- Insert a single key value pair to the collection
 function Headers:append(key, value)
     _append(self, key, value)
+    self.last_key = key
 end
 
 --- Get a header from the map of headers
