@@ -68,6 +68,15 @@ function Response:send(s)
     self.outgoing:send(self:_serialize())
 end
 
+function Response:has_sent()
+    if self._has_sent then
+        return self._has_sent
+    end
+    local _, s = self.outgoing:getstats()
+    self._has_sent = s > 0
+    return self._has_sent
+end
+
 return {
     Response = Response,
 }
