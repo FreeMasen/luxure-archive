@@ -6,8 +6,10 @@ local Headers = {}
 Headers.__index = Headers
 
 local function _append(t, key, value)
-    if t[key] == nil then
-        t[key] = {value}
+    if not t[key] then
+        t[key] = value
+    elseif type(t[key]) == 'string' then
+        t[key] = {t[key], value}
     else
         table.insert(t[key], value)
     end
@@ -18,13 +20,14 @@ end
 ---@param value string
 ---@return string
 local function serialize_header(key, value)
+    local utils = require 'luxure.utils'
     if type(value) == "table" then
         value = value[#value]
     end
     -- special case for MD5
     key = string.gsub(key, 'md5', 'mD5')
     -- special case for ETag
-    key = string.gsub(key, 'etag', 'eTag')
+    key = string.gsub(key, 'etag', 'ETag')
     if #key < 3 then
         return string.format("%s: %s", key:upper(), value)
     end
@@ -45,36 +48,17 @@ function Headers:serialize()
 end
 
 function Headers:append_chunk(text)
-    if string.match(text, "^\\s+") ~= nil then
+    if string.match(text, "^%s+") ~= nil then
         if self.last_key == nil then
             return "Continuation with no key"
         end
-        local ty = type(self[self.last_key])
-        if ty == "string" then
-            self[self.last_key] = {self[self.last_key], text}
-        elseif ty == "table" then
-            table.insert(self[self.last_key], text)
-        else
-            self[self.last_key] = text
-        end
+        local existing = self[self.last_key]
+        self[self.last_key] = string.format('%s %s', existing, text)
         return
     end
     for raw_key, value in string.gmatch(text, "([0-9a-zA-Z\\-]+): (.+);?") do
         local key = Headers.normalize_key(raw_key)
-        self.last_key = key
-        self[key] = value
-    end
-end
-
----Append a key value pair to this collection
----@param self table
----@param key string
----@param value string
-function Headers:append(key, value)
-    if self[key] == nil then
-        self[key] = value
-    else
-        table.insert(self[key], value)
+        self:append(key, value)
     end
 end
 
@@ -98,7 +82,7 @@ end
 ---
 --- @param text string
 function Headers:append_from(text)
-    for raw_key, value in string.gmatch(text, "(a-zA-Z\\-): (.+)") do
+    for raw_key, value in string.gmatch(text, "([a-zA-Z\\-]+): (.+)") do
         local key = Headers.normalize_key(raw_key)
         self:append(key, value)
     end
@@ -117,6 +101,7 @@ end
 --- Insert a single key value pair to the collection
 function Headers:append(key, value)
     _append(self, key, value)
+    self.last_key = key
 end
 
 --- Get a header from the map of headers
@@ -129,14 +114,12 @@ end
 --- @return string
 function Headers:get_one(key)
     local k = Headers.normalize_key(key or "")
-    if self[k] == nil then
-        return nil
+    local value = self[k]
+    if type(value) == 'table' then
+        return value[#value]
+    else
+        return value
     end
-    local values = self[k]
-    if type(values) == "string" then
-        return values
-    end
-    return values[#values]
 end
 
 --- Get a header from the map of headers
