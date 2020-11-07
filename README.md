@@ -33,8 +33,21 @@ server:get('/', function(req, res)
     res:send('Hello World!')
 end)
 
--- define a POST endpoint
+-- define a POST endpoint expecting a json body
 server:post('/hello', function(req, res)
+    if req.body.name == nil then
+        res:status(404):sent()
+        return
+    end
+    res:send(string.format('Hello %s!', req.body.name))
+end)
+
+-- define a GET endpoint, expecting query params
+server:get('/hello', function(req, res)
+    if req.url.query.name == nil then
+        res:status(404):sent()
+        return
+    end
     res:send(string.format('Hello %s!', req.body.name))
 end)
 
