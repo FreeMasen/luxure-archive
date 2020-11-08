@@ -1,6 +1,8 @@
 local Server = require 'luxure.server'.Server
 local mocks = require 'spec.mock_socket'
 local utils = require 'luxure.utils'
+local Error = require 'luxure.error'.Error
+
 describe('Server', function()
     it('Should handle requests', function()
         local s = assert(Server.new(mocks.MockModule.new({{
@@ -23,7 +25,7 @@ describe('Server', function()
         local called_middleware = false
         s:use(function(req, res, next)
             called_middleware = true
-            next.fn(req, res, next.next)
+            next(req, res)
         end)
         s:get('/', function(req, res)
             called = true
@@ -42,7 +44,7 @@ describe('Server', function()
         for i=1,10,1 do
             s:use(function(req, res, next)
                 middleware_call_count = middleware_call_count + 1
-                next.fn(req, res, next.next)
+                next(req, res)
             end)
         end
         s:get('/', function(req, res)
@@ -59,16 +61,19 @@ describe('Server', function()
         }})))
         s:listen(8080)
         local called = false
-        local middleware_call_count = 0
         s:use(function(req, res, next)
-            assert(false)
+            Error.assert(false, 'expected fail')
         end)
         s:get('/', function(req, res)
             called = true
         end)
         s:tick()
         assert(not called)
-        assert(string.find(sock[1], '^HTTP/1.1 500 Internal Server Error'), string.format('Expected 500 found %s',  utils.table_string(sock)))
+        assert(string.find(
+            sock[1],
+            '^HTTP/1.1 500 Internal Server Error'),
+            string.format('Expected 500 found %s',  utils.table_string(sock))
+        )
     end)
     it('no endpoint found should return 404', function()
         local sock = {'GET / HTTP/1.1'}
@@ -90,7 +95,7 @@ describe('Server', function()
         s:delete('/found', function() end)
         s:listen(8080)
         s:tick()
-        assert(string.find(sock[1], '^HTTP/1.1 404 Not Found'), string.format('Expected 500 found %s',  utils.table_string(sock)))
+        assert(string.find(sock[1], '^HTTP/1.1 404 Not Found'), string.format('Expected 404 found %s',  utils.table_string(sock)))
     end)
 
 end)

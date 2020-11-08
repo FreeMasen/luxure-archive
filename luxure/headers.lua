@@ -1,3 +1,4 @@
+local Error = require 'luxure.error'.Error
 ---@class Headers
 ---A map of the key value pairs from the header portion
 ---of an HTTP request
@@ -49,9 +50,7 @@ end
 
 function Headers:append_chunk(text)
     if string.match(text, "^%s+") ~= nil then
-        if self.last_key == nil then
-            return "Continuation with no key"
-        end
+        Error.assert(self.last_key, 'Header continuation with no key')
         local existing = self[self.last_key]
         self[self.last_key] = string.format('%s %s', existing, text)
         return

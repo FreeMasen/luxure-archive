@@ -1,4 +1,5 @@
 local Route = require 'luxure.route'.Route
+local Error = require 'luxure.error'.Error
 ---@class Router
 ---@field routes table List of Routes registered
 local Router = {}
@@ -21,17 +22,16 @@ function Router:route(req, res)
         local matched, params = route:matches(req.url)
         if matched and route:handles_method(req.method) then
             req.params = params
-            route:handle(req, res)
-            return true
+            local handled, err = Error.pcall(route.handle, route, req, res)
+            if not handled and err then
+                res:status(err.status or 500)
+            end
+            req.err = err
+            local u = require 'luxure.utils'
+            print('req.err', u.table_string(req.err))
+            req.handled = handled
         end
     end
-
-    local r, s, a = res.outgoing:getstats()
-    if s == 0 then
-        res:status(404)
-        res:send()
-    end
-    return false
 end
 ---Register a single route
 ---@param self Router
