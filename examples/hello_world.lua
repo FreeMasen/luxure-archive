@@ -19,7 +19,27 @@ server:use(function (req, res, next)
             print('failed to parse json')
         end
     end
-    next.fn(req, res, next.next)
+    next(req, res)
+end)
+
+-- Use a middleware that will emulate nginx logging
+server:use(function (req, res, next)
+    local start = os.time()
+    local remote = req.socket:getpeername()
+    next(req, res)
+    local request = string.format("%s %s %s", req.method, req.url.path, req.http_version)
+    local _, sent, _ = req.socket:getstats()
+    print(
+        string.format('%s - %s - [%s] "%s" %i %i "%s" "%s"',
+            remote,
+            req.url.user or '',
+            os.date('%Y-%m-%dT%H:%M:%S%z', start),
+            request,
+            res._status,
+            sent,
+            req:get_headers().referrer or '-',
+            req:get_headers().user_agent or '-'
+    ))
 end)
 
 -- define a root GET endpoint
@@ -30,7 +50,14 @@ end)
 
 -- This endpoint will always return 500
 server:get('/fail', function()
-    assert(false)
+    print('GET /fail')
+    -- using Error.assert from luxure, you will automatically
+    -- generate the correctly formatted error to automatically
+    -- return 500 to the caller and set your message as the body.
+    -- if you were to set the environment variable `LUXURE_ENV`
+    -- to a value other than 'production' and it will also send
+    -- the origial file/line number and the backtrace from the error
+    lux.Error.assert(false, 'I always fail')
 end)
 
 -- define a parameterized GET endpoint, here :name will
@@ -44,10 +71,9 @@ end)
 -- define a POST endpoint expecting a json body
 server:post('/hello', function(req, res)
     print('POST /hello')
-    if req.body.name == nil then
-        res:status(404):sent()
-        return
-    end
+    -- You can also pass an optional status code to this custom assert
+    -- that will automatically set the reply status to that
+    lux.Error.assert(req.body.name, 'name is a required variable', 417)
     local content = string.format('Hello %s', req.body.name)
     res:send(content)
 end)

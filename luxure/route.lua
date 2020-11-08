@@ -1,4 +1,5 @@
 local net_url = require 'net.url'
+local Error = require 'luxure.error'.Error
 
 ---@class Route
 ---
@@ -39,6 +40,8 @@ function Route:handles_method(method)
     return self.methods[method] ~= nil
 end
 
+---Check if a parsed url matches this route
+---@param url table the parsed table representing this url
 function Route:matches(url)
     local params = {}
     local i = 0
@@ -61,9 +64,11 @@ function Route:matches(url)
     return #self.segments == i, params
 end
 
-
+---The request/response handler for this route
+---@param req Request the incoming request
+---@param res Response the outgoing response
 function Route:handle(req, res)
-    assert(self.methods[req.method], 'attempt to dispatch an unhandled method')
+    Error.assert(self.methods[req.method], 'attempt to dispatch an unhandled method')
     self.methods[req.method](req, res)
 end
 

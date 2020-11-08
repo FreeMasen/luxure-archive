@@ -3,6 +3,7 @@ local Request = r.Request
 local parse_preamble = r.testable.parse_preamble
 local serialize_header = r.testable.serialize_header
 local MockSocket = require 'spec.mock_socket'.MockSocket
+local Error = require 'luxure.error'.Error
 
 local normal_headers = {
     {"Accept: text/html", 'accept', "text/html"},
@@ -75,7 +76,7 @@ describe('Request', function()
             assert(r.http_version == "2", "expected version to be 2")
         end)
         it('bad request', function()
-            local _, e = parse_preamble('')
+            local _, e = Error.pcall(parse_preamble, '')
             assert(e)
         end)
     end)

@@ -1,5 +1,7 @@
 local net_url = require 'net.url'
 local Headers = require 'luxure.headers'.Headers
+local Error = require 'luxure.error'.Error
+
 ---@class Request
 ---@field method string the HTTP method for this request
 ---@field url table The parse url of this request
@@ -23,7 +25,7 @@ local function parse_preamble(line)
             raw = line .. "\r\n",
         }
     end
-    return nil, string.format("Invalid http request first line: '%s'", line)
+    Error.assert(false, string.format("Invalid http request first line: '%s'", line))
 end
 
 --- Get the headers for this request
@@ -100,6 +102,7 @@ function Request:_fill_body()
 end
 
 function Request.new(socket)
+    Error.assert(socket, 'cannot create request with nil socket')
     local r = {
         socket = socket,
         parsed_headers = false,

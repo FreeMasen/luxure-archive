@@ -39,6 +39,9 @@ function MockSocket:send(s)
     self.inner = self.inner or {}
     self.sent = self.sent + #(s or "")
     table.insert(self.inner, s)
+    if s then
+        return #s
+    end
 end
 
 local MockTcp = {}

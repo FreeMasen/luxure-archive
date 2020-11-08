@@ -1,7 +1,9 @@
+local env = os.getenv('LUXURE_ENV') or 'production'
 local Router = require 'luxure.router'.Router
 local Request = require 'luxure.request'.Request
 local Response = require 'luxure.response'.Response
 local methods = require 'luxure.methods'
+local Error = require 'luxure.error'.Error
 
 ---@class Server
 ---@field socket_mod table socket module being used by the server
@@ -35,7 +37,7 @@ function Server:listen(port)
     if port == nil then
         port = 0
     end
-    self.sock = self.socket_mod.bind(self.ip, port);
+    self.sock = Error.assert(self.socket_mod.bind(self.ip, port));
 end
 
 for _, method in ipairs(methods) do
@@ -46,38 +48,59 @@ for _, method in ipairs(methods) do
 end
 
 function Server:use(middleware)
-    local next = self.middleware or {
-        fn = function(req, res)
-            self.router:route(req, res)
-        end,
-    }
-    self.middleware = {
-        fn = middleware,
-        next = next,
-    }
+    if self.middleware == nil then
+        self.middleware = function (req, res)
+            self.router.route(self.router, req, res)
+        end
+    end
+    local next = self.middleware
+    self.middleware = function(req, res)
+        local success, err = Error.pcall(middleware, req, res, next)
+        if not success then
+            req.err = req.err or err
+            res:status(err.status)
+        end
+    end
 end
 
 function Server:route(req, res)
-    local handled
     if self.middleware then
-        handled = self.middleware.fn(req, res, self.middleware.next)
+        self.middleware(req, res)
     else
-        handled = self.router:route(req, res)
+        self.router.route(self.router, req, res)
     end
-    return handled
 end
 
 ---A single step in the Server run loop
 function Server:tick()
-    local incoming = assert(self.sock:accept())
+    local incoming = Error.assert(self.sock:accept())
     local req = Request.new(incoming)
     local res = Response.new(incoming)
-    local success = pcall(self.route, self, req, res)
-    if not success then
-        local r, s, a = incoming:getstats()
-        if s == 0 then
-            res:status(500)
-            res:send()
+    self:route(req, res)
+    local has_sent = res:has_sent()
+    if req.err then
+        if not has_sent then
+            local msg
+            if env == 'production' then
+                if req.err.msg then
+                    msg = req.err.msg
+                end
+            else
+                if req.err.traceback then
+                    msg = req.err.msg_with_line .. '\n' .. req.err.traceback
+                end
+            end
+            res:send(msg)
+        else
+            print('error sending after bytes have been sent...')
+            print(req.err.msg)
+            if req.err.traceback then
+                print(req.err.traceback)
+            end
+        end
+    elseif not req.handled then
+        if not has_sent then
+            res:status(404):send('')
         end
     end
     incoming:close()

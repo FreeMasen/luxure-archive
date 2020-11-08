@@ -5,5 +5,5 @@ express/
 /lua
 /lua_modules
 /.luarocks
-init.lua
+/init.lua
 *.rock

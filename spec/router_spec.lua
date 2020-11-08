@@ -10,10 +10,10 @@ describe('Router', function ()
         r:register_handler('/', 'GET', function(req, res)
             called = true
         end)
-        assert(r:route(
+        r:route(
             req,
             Response.new(MockSocket.new())
-        ))
+        )
         assert(called)
     end)
     it('should not call if route not matched', function()

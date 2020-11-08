@@ -1,11 +1,14 @@
 local headers = require 'luxure.headers'
 local statuses = require 'luxure.status'
+local Error = require 'luxure.error'.Error
+
 ---@class Response
----@field headers headers.Headers The HTTP headers for this response
+---@field headers Headers The HTTP headers for this response
 ---@field _status number The HTTP status code for this response
 ---@field body string the contents of the response body
 ---@field outgoing table The socket this response will send on
 local Response = {}
+
 Response.__index = Response
 
 
@@ -26,7 +29,7 @@ end
 --- set the status for this request
 --- @param n number the 3 digit status
 function Response:status(n)
-    assert(type(n) == 'number', string.format('http status must be a number, found %s', type(n)))
+    Error.assert(type(n) == 'number', string.format('http status must be a number, found %s', type(n)))
     self._status = n
     return self
 end
@@ -34,7 +37,7 @@ end
 --- set the content type of the outbound request
 --- @param mime string the mime type for this request
 function Response:content_type(mime)
-    assert(type(mime) == 'string', string.format('mime type must be a string, found %s', type(mime)))
+    Error.assert(type(mime) == 'string', string.format('mime type must be a string, found %s', type(mime)))
     self.headers.content_type = mime
     return self
 end
@@ -65,7 +68,13 @@ function Response:send(s)
     if type(s) == 'string' then
         self:append_body(s)
     end
-    self.outgoing:send(self:_serialize())
+    local success, sent_or_err, err = pcall(self.outgoing.send, self.outgoing, self:_serialize())
+    -- if pcall failes on send, we return early with the message
+    -- from that
+    Error.assert(success, sent_or_err)
+    -- if pcall returns successfully, we still need to make sure that
+    -- the send didn't return an eror 'timeout' or 'close'
+    Error.assert(sent_or_err, err)
 end
 
 function Response:has_sent()
