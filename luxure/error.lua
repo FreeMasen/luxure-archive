@@ -6,7 +6,6 @@ local Error = {}
 Error.__index = Error
 
 local function new_error(msg, msg_with_line, status, traceback)
-    print('new_error', msg, msg_with_line)
     local ret = {
         msg = msg,
         msg_with_line = msg_with_line,
