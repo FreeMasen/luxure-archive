@@ -1,5 +1,5 @@
 package = "luxure"
-version = "0.1.0-1"
+version = "0.1.0-2"
 source = {
    url = "git://github.com/FreeMasen/luxure",
    tag = "v0.1.0"
@@ -16,7 +16,7 @@ build = {
    type = "builtin",
    modules = {
       luxure = "luxure/init.lua",
-      ["luxure.headers"] = "luxure/error.lua",
+      ["luxure.error"] = "luxure/error.lua",
       ["luxure.headers"] = "luxure/headers.lua",
       ["luxure.methods"] = "luxure/methods.lua",
       ["luxure.request"] = "luxure/request.lua",
