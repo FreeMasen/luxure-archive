@@ -1,5 +1,5 @@
 package = "luxure"
-version = "0.1.0-3"
+version = "0.1.0-4"
 source = {
    url = "git://github.com/FreeMasen/luxure",
    tag = "v0.1.0"

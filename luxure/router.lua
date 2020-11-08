@@ -28,7 +28,6 @@ function Router:route(req, res)
             end
             req.err = err
             local u = require 'luxure.utils'
-            print('req.err', u.table_string(req.err))
             req.handled = handled
         end
     end
