@@ -1,7 +1,12 @@
-
-
-
-local Error = {}
+local Error = {
+    __tostring = function(err)
+        local ret = err.msg_with_line or err.msg or 'Unknown Error'
+        if err.traceback ~= nil then
+            ret = ret .. string.format("\n%s", err.traceback)
+        end
+        return ret
+    end
+}
 
 Error.__index = Error
 

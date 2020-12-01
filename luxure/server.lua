@@ -100,10 +100,7 @@ function Server:tick()
             res:send(msg)
         else
             print('error sending after bytes have been sent...')
-            print(req.err.msg)
-            if req.err.traceback then
-                print(req.err.traceback)
-            end
+            print(req.err)
         end
     elseif not req.handled then
         if not has_sent then
