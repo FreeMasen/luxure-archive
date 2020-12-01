@@ -1,4 +1,3 @@
-local env = os.getenv('LUXURE_ENV') or 'production'
 local Router = require 'luxure.router'.Router
 local Request = require 'luxure.request'.Request
 local Response = require 'luxure.response'.Response
@@ -16,12 +15,14 @@ Server.__index = Server
 
 ---Constructor for a Server
 ---@param socket_mod table This should look something like luasocket
-function Server.new(socket_mod)
+function Server.new(socket_mod, opts)
+    opts = opts or {env = 'production'}
     local base = {
         socket_mod = socket_mod,
         router = Router.new(),
         middleware = nil,
         ip = '0.0.0.0',
+        env = opts.env,
     }
     setmetatable(base, Server)
     return base
@@ -81,7 +82,7 @@ function Server:tick()
     if req.err then
         if not has_sent then
             local msg
-            if env == 'production' then
+            if self.env == 'production' then
                 if req.err.msg then
                     msg = req.err.msg
                 end
