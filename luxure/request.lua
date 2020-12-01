@@ -85,20 +85,32 @@ end
 
 function Request:get_body()
     if not self._received_body then
-        self:_fill_body()
+        local err = self:_fill_body()
+        if err ~= nil then
+            return nil, err
+        end
     end
     return self._body
 end
 
 function Request:_fill_body()
-    local headers, err = self:get_headers()
-    if err then
+    local len, err = self:content_length()
+    if len == nil then
         return err
     end
-    if headers.content_length ~= nil then
-        self._body = self.socket:receive(headers.content_length)
-    end
+    self._body = self.socket:receive(len)
     self._received_body = true
+end
+
+function Request:content_length()
+    local headers, err = self:get_headers()
+    if err then
+        return nil, err
+    end
+    if headers.content_length == nil then
+        return 0
+    end
+    return math.tointeger(headers.content_length) or 0
 end
 
 function Request.new(socket)
