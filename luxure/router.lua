@@ -14,7 +14,6 @@ function Router.new()
     return base
 end
 ---Dispatch a request to the approparte Route
----@param self Router
 ---@param req Request
 ---@param res Response
 function Router:route(req, res)
@@ -33,7 +32,6 @@ function Router:route(req, res)
     end
 end
 ---Register a single route
----@param self Router
 ---@param path string The route for this request
 ---@param method string the HTTP method for this request
 ---@param callback function(luxure.request.Request, luxure.response.Response) The callback this route will use to handle requests
