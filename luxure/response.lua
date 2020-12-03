@@ -29,6 +29,10 @@ end
 --- set the status for this request
 --- @param n number the 3 digit status
 function Response:status(n)
+    if type(n) == 'string' then
+        n = math.tointeger(n)
+    end
+
     Error.assert(type(n) == 'number', string.format('http status must be a number, found %s', type(n)))
     self._status = n
     return self
@@ -69,11 +73,11 @@ function Response:send(s)
         self:append_body(s)
     end
     local success, sent_or_err, err = pcall(self.outgoing.send, self.outgoing, self:_serialize())
-    -- if pcall failes on send, we return early with the message
+    -- if pcall fails on send, we return early with the message
     -- from that
     Error.assert(success, sent_or_err)
     -- if pcall returns successfully, we still need to make sure that
-    -- the send didn't return an eror 'timeout' or 'close'
+    -- the send didn't return an error 'timeout' or 'close'
     Error.assert(sent_or_err, err)
 end
 

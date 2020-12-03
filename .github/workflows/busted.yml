@@ -16,8 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: xpol/setup-lua@v0.2
-      - uses: leafo/gh-actions-luarocks@v3
+      - env: 
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        uses: xpol/setup-lua@v0.2
+      - uses: leafo/gh-actions-luarocks@v4
       - name: test
         run: |
           luarocks install busted \

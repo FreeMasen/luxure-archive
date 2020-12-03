@@ -1,7 +1,12 @@
-
-
-
-local Error = {}
+local Error = {
+    __tostring = function(err)
+        local ret = err.msg_with_line or err.msg or 'Unknown Error'
+        if err.traceback ~= nil then
+            ret = ret .. string.format("\n%s", err.traceback)
+        end
+        return ret
+    end
+}
 
 Error.__index = Error
 
@@ -24,31 +29,37 @@ end
 ---@param status number defualts to 500
 function Error.assert(test, msg, status)
     msg = msg or 'assertion failed'
-    local traceback = debug.traceback(msg, 2)
-    local info = debug.getinfo(2)
-    local orig_loc = string.format("%s:%s", info.short_src or '', info.currentline or '')
-    msg = string.format("%s|%i|%s|%s", msg, status or 500, traceback, orig_loc)
-    return assert(test, msg)
+    if debug then
+        local traceback = debug.traceback(msg, 2)
+        local info = debug.getinfo(2)
+        local orig_loc = string.format('%s:%s', info.short_src or '', info.currentline or '')
+        msg = string.format('%s|%s|%s', msg, traceback, orig_loc)
+    end
+    return assert(test, string.format('%s|%i', msg, status or 500))
 end
 
 local function parse_error_msg(s)
     local i = 1
     local keys = {
         'msg',
-        'status',
         'traceback',
-        'orig_loc'
+        'orig_loc',
+        'status',
     }
     local values = {}
-    for part in string.gmatch(s, "[^|]+") do
+    for part in string.gmatch(s, '[^|]+') do
         values[keys[i]] = part
         i = i + 1
     end
-    if i ~= 5 then
-        return s
-    else
+    if i == 2 then
+        values.status = values.traceback
+        values.traceback = nil
         return values
     end
+    if i ~= 5 then
+        return s
+    end
+    return values
 end
 
 function Error.pcall(...)

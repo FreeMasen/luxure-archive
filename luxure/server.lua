@@ -1,4 +1,3 @@
-local env = os.getenv('LUXURE_ENV') or 'production'
 local Router = require 'luxure.router'.Router
 local Request = require 'luxure.request'.Request
 local Response = require 'luxure.response'.Response
@@ -16,12 +15,15 @@ Server.__index = Server
 
 ---Constructor for a Server
 ---@param socket_mod table This should look something like luasocket
-function Server.new(socket_mod)
+function Server.new(socket_mod, opts)
+    opts = opts or {}
     local base = {
         socket_mod = socket_mod,
         router = Router.new(),
         middleware = nil,
         ip = '0.0.0.0',
+        env = opts.env or 'production',
+        backlog = opts.backlog,
     }
     setmetatable(base, Server)
     return base
@@ -37,7 +39,12 @@ function Server:listen(port)
     if port == nil then
         port = 0
     end
-    self.sock = Error.assert(self.socket_mod.bind(self.ip, port));
+    self.sock = self.socket_mod.tcp()
+    assert(self.sock:bind(self.ip, port or 0), "failed to bind")
+    self.sock:listen(self.backlog)
+    local ip, port = self.sock:getsockname()
+    self.ip = ip
+    self.port = port
 end
 
 for _, method in ipairs(methods) do
@@ -81,7 +88,7 @@ function Server:tick()
     if req.err then
         if not has_sent then
             local msg
-            if env == 'production' then
+            if self.env == 'production' then
                 if req.err.msg then
                     msg = req.err.msg
                 end
@@ -93,10 +100,7 @@ function Server:tick()
             res:send(msg)
         else
             print('error sending after bytes have been sent...')
-            print(req.err.msg)
-            if req.err.traceback then
-                print(req.err.traceback)
-            end
+            print(req.err)
         end
     elseif not req.handled then
         if not has_sent then
