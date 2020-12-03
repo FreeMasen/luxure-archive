@@ -23,7 +23,7 @@ function Server.new(socket_mod, opts)
         middleware = nil,
         ip = '0.0.0.0',
         env = opts.env or 'production',
-        backlog = opts.backlog or 5,
+        backlog = opts.backlog,
     }
     setmetatable(base, Server)
     return base
