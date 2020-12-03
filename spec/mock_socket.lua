@@ -1,3 +1,4 @@
+---TCP Client Socket
 local MockSocket = {}
 MockSocket.__index = MockSocket
 
@@ -10,6 +11,18 @@ function MockSocket.new(inner)
     }
     setmetatable(ret, MockSocket)
     return ret
+end
+
+function MockSocket:bind(ip, port)
+    return 1
+end
+
+function MockSocket:listen(backlog)
+    return 1
+end
+
+function MockSocket:getsockname()
+    return "0.0.0.0", 0
 end
 
 function MockSocket:getstats()
@@ -44,6 +57,7 @@ function MockSocket:send(s)
     end
 end
 
+---TCP Master Socket
 local MockTcp = {}
 MockTcp.__index = MockTcp
 
@@ -60,6 +74,18 @@ function MockTcp:accept()
     return MockSocket.new(list)
 end
 
+function MockTcp:bind(ip, port)
+    return 1
+end
+
+function MockTcp:listen(backlog)
+    return 1
+end
+
+function MockTcp:getsockname()
+    return "0.0.0.0", 0
+end
+
 local MockModule = {}
 MockModule.__index = MockModule
 local sockets
@@ -67,9 +93,12 @@ function MockModule.new(inner)
     sockets = inner or {}
     return MockModule
 end
-function MockModule.bind(ip, port)
-    local list = assert(table.remove(sockets))
+function MockModule.tcp()
+    local list = assert(table.remove(sockets), "No sockets in the list")
     return MockTcp.new(list)
+end
+function MockModule.bind(ip, port)
+    return 1
 end
 
 return {
