@@ -20,6 +20,16 @@ local function new_error(msg, msg_with_line, status, traceback)
     setmetatable(ret, Error)
     return ret
 end
+
+local function build_error_string(msg, status)
+    if debug then
+        local traceback = debug.traceback(msg, 3)
+        local info = debug.getinfo(2)
+        local orig_loc = string.format('%s:%s', info.short_src or '', info.currentline or '')
+        msg = string.format('%s|%s|%s', msg, traceback, orig_loc)
+    end
+    return string.format('%s|%i', msg, status or 500)
+end
 ---Wrapper around assert that coverts the
 ---message into an pipe sepereted list
 ---this format will be used by pcall to reconstruct
@@ -28,16 +38,13 @@ end
 ---@param msg string
 ---@param status number defualts to 500
 function Error.assert(test, msg, status)
-    msg = msg or 'assertion failed'
-    if debug then
-        local traceback = debug.traceback(msg, 2)
-        local info = debug.getinfo(2)
-        local orig_loc = string.format('%s:%s', info.short_src or '', info.currentline or '')
-        msg = string.format('%s|%s|%s', msg, traceback, orig_loc)
-    end
-    return assert(test, string.format('%s|%i', msg, status or 500))
+    msg = build_error_string(msg or 'assertion failed', status)
+    return assert(test, msg)
 end
 
+function Error.raise(msg, status)
+    error(build_error_string(msg, status))
+end
 local function parse_error_msg(s)
     local i = 1
     local keys = {
