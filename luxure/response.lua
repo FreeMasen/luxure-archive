@@ -4,13 +4,11 @@ local Error = require 'luxure.error'.Error
 
 ---@class Response
 ---@field headers Headers The HTTP headers for this response
----@field _status number The HTTP status code for this response
 ---@field body string the contents of the response body
 ---@field outgoing table The socket this response will send on
 local Response = {}
 
 Response.__index = Response
-
 
 --- create a response for to a corisponding request
 --- @param outgoing table anything that can call `:send()`
@@ -26,8 +24,9 @@ function Response.new(outgoing)
     return base
 end
 
---- set the status for this request
---- @param n number the 3 digit status
+---Set the status for this request
+---@param n number the 3 digit status
+---@return Response
 function Response:status(n)
     if type(n) == 'string' then
         n = math.tointeger(n)

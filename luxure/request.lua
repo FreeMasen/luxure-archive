@@ -8,12 +8,13 @@ local Error = require 'luxure.error'.Error
 ---@field http_version string The http version from the request preamble
 ---@field headers Headers The HTTP headers for this request
 ---@field body string The contents of the request
----@field raw string the raw request contents
 local Request = {}
 
 Request.__index = Request
 
 --- Parse the first line of an HTTP request
+---@param line string
+---@return table
 local function parse_preamble(line)
     for method, path, http_version in string.gmatch(line, "([A-Z]+) (.+) HTTP/([0-9.]+)") do
         return {
@@ -22,7 +23,6 @@ local function parse_preamble(line)
             http_version = http_version,
             _body = nil,
             _headers = nil,
-            raw = line .. "\r\n",
         }
     end
     Error.assert(false, string.format("Invalid http request first line: '%s'", line))
@@ -31,6 +31,7 @@ end
 --- Get the headers for this request
 --- parsing the incoming stream of headers
 --- if not already parsed
+---@return Headers, string|nil
 function Request:get_headers()
     if self.parsed_headers == false then
         local err = self:_fill_headers()
@@ -40,7 +41,7 @@ function Request:get_headers()
     end
     return self._headers
 end
-
+---read from the socket filling in the headers property
 function Request:_fill_headers()
     while true do
         local done, err = self:_parse_header()
@@ -54,8 +55,11 @@ function Request:_fill_headers()
     end
 end
 
+---Read a single line from the socket and parse it as an http header
+---returning true when the end of the http headers
+---@return boolean|nil, string|nil
 function Request:_parse_header()
-    local line, err = self:_next_chunk()
+    local line, err = self:_next_line()
     if err ~= nil then
         return nil, err
     end
@@ -63,26 +67,23 @@ function Request:_parse_header()
         self._headers = Headers.new()
     end
     if line == "" then
-        self:_append_raw("")
         return true
     else
         self._headers:append_chunk(line)
     end
     return false
 end
-
-function Request:_next_chunk()
-    local chunk, err = self.socket:receive()
-    if chunk ~= nil then
-        self:_append_raw(chunk)
-    end
-    return chunk, err
+---Read a single line from the socket
+---@return string|nil, string|nil
+function Request:_next_line()
+    local line, err = self.socket:receive('*l')
+    return line, err
 end
 
-function Request:_append_raw(line)
-    self.raw = (self.raw or '') .. line .. "\r\n"
-end
-
+---Get the contents of this request's body
+---if not yet received, this will read the body
+---from the socket
+---@return string|nil, string|nil
 function Request:get_body()
     if not self._received_body then
         local err = self:_fill_body()
@@ -93,6 +94,9 @@ function Request:get_body()
     return self._body
 end
 
+---Read from the socket, filling the body property
+---of this request
+---@return string|nil
 function Request:_fill_body()
     local len, err = self:content_length()
     if len == nil then
@@ -102,6 +106,9 @@ function Request:_fill_body()
     self._received_body = true
 end
 
+--- Get the value from the Content-Length header that should be present
+--- for all http requests
+---@return number|nil, string|nil
 function Request:content_length()
     local headers, err = self:get_headers()
     if err then
@@ -113,6 +120,9 @@ function Request:content_length()
     return math.tointeger(headers.content_length) or 0
 end
 
+---Construct a new Request
+---@param socket table The tcp client socket for this request
+---@return Request|nil, string|nil
 function Request.new(socket)
     Error.assert(socket, 'cannot create request with nil socket')
     local r = {
@@ -120,7 +130,7 @@ function Request.new(socket)
         parsed_headers = false,
     }
     setmetatable(r, Request)
-    local line, acc_err = r:_next_chunk()
+    local line, acc_err = r:_next_line()
     if acc_err then
         return nil, acc_err
     end
@@ -131,7 +141,6 @@ function Request.new(socket)
     r.http_version = pre.http_version
     r.method = pre.method
     r.url = pre.url
-    r.raw = pre.raw
     return r
 end
 

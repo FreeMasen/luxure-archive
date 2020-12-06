@@ -1,3 +1,5 @@
+---@class Error
+---Represents and error in the request/response cycle
 local Error = {
     __tostring = function(err)
         local ret = err.msg_with_line or err.msg or 'Unknown Error'
@@ -32,7 +34,7 @@ local function build_error_string(msg, status)
 end
 ---Wrapper around assert that coverts the
 ---message into an pipe sepereted list
----this format will be used by pcall to reconstruct
+---this format will be used by Error.pcall to reconstruct
 ---an Error if any calls to assert raise an error
 ---@param test boolean
 ---@param msg string
@@ -42,6 +44,9 @@ function Error.assert(test, msg, status)
     return assert(test, msg)
 end
 
+--- Raise and error with a message and status
+---@param msg string
+---@param status number
 function Error.raise(msg, status)
     error(build_error_string(msg, status))
 end
@@ -69,6 +74,9 @@ local function parse_error_msg(s)
     return values
 end
 
+--- Wrapper around `pcall` that will reconstruct the Error object
+--- on failure
+---@return Error | string
 function Error.pcall(...)
     local res = table.pack(pcall(...))
     local success = res[1]

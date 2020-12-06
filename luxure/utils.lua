@@ -6,7 +6,11 @@ local function format_non_table(v)
     if type(v) == 'string' then return string.format('\'%s\'', v) end
     return string.format('%s', v)
 end
-
+--- Format a table as a pretty printed string
+---@param v any can be any value but works best with a table
+---@param pre string|nil the current prefix, set by recursive calls
+---@param visited number[] table pointers that have been already printed
+---                         to avoid infinate recursion, set by recursive calls
 local function table_string(v, pre, visited)
     pre = pre or ""
     visited = visited or {}
