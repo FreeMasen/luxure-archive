@@ -120,7 +120,7 @@ end
 ---Send the pre body content on the socket
 function Response:_send_preamble_and_headers()
     if self.headers.content_type == nil then
-        self.content_type('text/plain')
+        self:content_type('text/plain')
     end
     send_all(self.outgoing, self:_generate_prebody())
 end
@@ -132,9 +132,8 @@ function Response:append_body(s)
     if type(s) == "string" then
         self.body = (self.body or "") .. s
     end
-    local from = self:_should_send()
     if self:_should_send() then
-        self:_send_chunk(from)
+        self:_send_chunk()
     end
     return self
 end
@@ -150,10 +149,12 @@ end
 --- Send a chunk when sending in buffered mode
 --- this will truncate self.body to an empty string
 function Response:_send_chunk()
+    local to_send = self.body
     if not self:has_sent() then
-        self:_send_preamble_and_headers()
+        to_send = self:_generate_prebody()..to_send
+    else
     end
-    send_all(self.outgoing, self.body)
+    send_all(self.outgoing, to_send)
     self.body = ''
 end
 
