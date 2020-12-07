@@ -46,11 +46,11 @@ function Server:listen(port)
         port = 0
     end
     self.sock = self.socket_mod.tcp()
-    assert(self.sock:bind(self.ip, port or 0), "failed to bind")
+    assert(self.sock:bind(self.ip, port or 0))
     self.sock:listen(self.backlog)
-    local ip, port = self.sock:getsockname()
+    local ip, resolved_port = self.sock:getsockname()
     self.ip = ip
-    self.port = port
+    self.port = resolved_port
 end
 
 ---Register some middleware to be use for each request
@@ -62,9 +62,7 @@ function Server:use(middleware)
             self.router.route(self.router, req, res)
         end
     end
-    ---@type fun(req:Request,res:Response)
     local next = self.middleware
-    ---@type fun(req:Request,res:Response)
     self.middleware = function(req, res)
         local success, err = Error.pcall(middleware, req, res, next)
         if not success then

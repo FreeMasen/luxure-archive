@@ -4,6 +4,8 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/freemasen/luxure/CI)
 ![LuaRocks](https://img.shields.io/luarocks/v/FreeMasen/luxure)
 
+![Luxure Logo][./luxure.svg]
+
 An HTTP Server framework for Lua
 
 ## Usage
