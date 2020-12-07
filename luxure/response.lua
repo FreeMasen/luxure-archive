@@ -83,6 +83,13 @@ function Response:content_length(len)
     return self
 end
 
+--- Set the send buffer size to enable buffered writes
+--- if unset, the full response body is buffered before sending
+---@param size number|nil
+function Response:set_send_buffer_size(size)
+    self._send_buffer_size = size
+end
+
 ---Serialize this full response into a string
 ---@return string
 function Response:_serialize()
@@ -167,6 +174,26 @@ function Response:send(s)
     end
 end
 
+--- Create a ltn12 sink for sending on this Response
+--- If using this interface, it is a very good idea to already
+--- know the size of your response body and set that prior
+--- to passing this sink to a pump. If the Content-Length header
+--- is unset when this starts, there will be no way to back fill
+--- that value.
+---
+--- For buffered writes, be sure to call :set_send_buffer_size
+---@return fun(chunk:string|nil, err: string|nil): number|nil
+function Response:sink()
+    return function(chunk, err)
+        Error.assert(not err, err)
+        if chunk == nil then
+            self:send()
+        else
+            self:append_body(chunk)
+        end
+        return 1
+    end
+end
 
 
 ---Check if this response has sent any bytes
