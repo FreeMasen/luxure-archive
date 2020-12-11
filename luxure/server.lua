@@ -87,7 +87,11 @@ end
 --the registered middleware and reoutes
 function Server:tick()
     local incoming = Error.assert(self.sock:accept())
-    local req = Request.new(incoming)
+    local req, req_err = Request.new(incoming)
+    if not req_err then
+        print('socket error: ', req_err)
+        return
+    end
     local res = Response.new(incoming)
     self:route(req, res)
     local has_sent = res:has_sent()
