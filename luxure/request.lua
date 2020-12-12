@@ -12,7 +12,7 @@ local Request = {}
 
 Request.__index = Request
 
---- Parse the first line of an HTTP request
+---Parse the first line of an HTTP request
 ---@param line string
 ---@return table
 local function parse_preamble(line)
@@ -28,9 +28,9 @@ local function parse_preamble(line)
     Error.assert(false, string.format("Invalid http request first line: '%s'", line))
 end
 
---- Get the headers for this request
---- parsing the incoming stream of headers
---- if not already parsed
+---Get the headers for this request
+---parsing the incoming stream of headers
+---if not already parsed
 ---@return Headers, string|nil
 function Request:get_headers()
     if self.parsed_headers == false then
@@ -107,8 +107,8 @@ function Request:_fill_body()
     self._received_body = true
 end
 
---- Get the value from the Content-Length header that should be present
---- for all http requests
+---Get the value from the Content-Length header that should be present
+---for all http requests
 ---@return number|nil, string|nil
 function Request:content_length()
     local headers, err = self:get_headers()

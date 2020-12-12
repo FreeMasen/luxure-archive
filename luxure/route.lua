@@ -3,7 +3,7 @@ local Error = require 'luxure.error'.Error
 
 ---@class Route
 ---
---- A single instance of a route
+---A single instance of a route
 ---@field path string raw string that comprises this path
 ---@field segments table list of ids or path segments, each segment may be a parameter if preceded by a :
 ---@field vars table list of variables that will be parsed from the segments field

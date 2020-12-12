@@ -44,7 +44,7 @@ function Error.assert(test, msg, status)
     return assert(test, msg)
 end
 
---- Raise and error with a message and status
+---Raise and error with a message and status
 ---@param msg string
 ---@param status number
 function Error.raise(msg, status)
@@ -74,8 +74,8 @@ local function parse_error_msg(s)
     return values
 end
 
---- Wrapper around `pcall` that will reconstruct the Error object
---- on failure
+---Wrapper around `pcall` that will reconstruct the Error object
+---on failure
 ---@return Error | string
 function Error.pcall(...)
     local res = table.pack(pcall(...))
