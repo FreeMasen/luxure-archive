@@ -20,8 +20,8 @@ server:use(function (req, res, next)
             end
         end
     end
-    res.headers.www_authenticate = 'Basic realm="my realm"'
-    lux.Error.raise("Unable to authenticate", 401)
+    res.headers.www_authenticate = 'Basic realm=\'my realm\''
+    lux.Error.raise('Unable to authenticate', 401)
 end)
 
 local function static_content(path, res)

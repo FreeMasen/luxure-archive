@@ -68,7 +68,7 @@ end
 ---@return string
 local function serialize_header(key, value)
     local utils = require 'luxure.utils'
-    if type(value) == "table" then
+    if type(value) == 'table' then
         value = value[#value]
     end
     -- special case for MD5
@@ -76,22 +76,22 @@ local function serialize_header(key, value)
     -- special case for ETag
     key = string.gsub(key, 'etag', 'ETag')
     if #key < 3 then
-        return string.format("%s: %s", key:upper(), value)
+        return string.format('%s: %s', key:upper(), value)
     end
     -- special case for WWW-*
     key = string.gsub(key, 'www', 'WWW')
     local replaced = key:sub(1, 1):upper() .. string.gsub(key:sub(2), '_(%l)', function (c)
         return '-' .. c:upper()
     end)
-    return string.format("%s: %s", replaced, value)
+    return string.format('%s: %s', replaced, value)
 end
 
----Serialize the whole set of headers seperating them with a "\r\n"
+---Serialize the whole set of headers seperating them with a '\r\n'
 ---@return string
 function Headers:serialize()
-    local ret = ""
+    local ret = ''
     for key, value in pairs(self) do
-        ret = ret .. serialize_header(key, value) .. "\r\n"
+        ret = ret .. serialize_header(key, value) .. '\r\n'
     end
     return ret
 end
@@ -99,13 +99,13 @@ end
 ---Append a chunk of headers to this map
 ---@param text string
 function Headers:append_chunk(text)
-    if string.match(text, "^%s+") ~= nil then
+    if string.match(text, '^%s+') ~= nil then
         Error.assert(self.last_key, 'Header continuation with no key')
         local existing = self[self.last_key]
         self[self.last_key] = string.format('%s %s', existing, text)
         return
     end
-    for raw_key, value in string.gmatch(text, "([0-9a-zA-Z\\-]+): (.+);?") do
+    for raw_key, value in string.gmatch(text, '([0-9a-zA-Z\\-]+): (.+);?') do
         local key = Headers.normalize_key(raw_key)
         self:append(key, value)
     end
@@ -136,7 +136,7 @@ end
 ---@return string
 function Headers.normalize_key(key)
     local lower = string.lower(key)
-    local normalized = string.gsub(lower, "-", "_")
+    local normalized = string.gsub(lower, '-', '_')
     return normalized
 end
 
@@ -149,13 +149,13 @@ end
 ---Get a header from the map of headers
 ---
 ---This will first normalize the provided key. For example
----"Content-Type" will be normalized to `content_type`.
+---'Content-Type' will be normalized to `content_type`.
 ---If more than one value is provided for that header, the
 ---last value will be provided
 ---@param key string
 ---@return string
 function Headers:get_one(key)
-    local k = Headers.normalize_key(key or "")
+    local k = Headers.normalize_key(key or '')
     local value = self[k]
     if type(value) == 'table' then
         return value[#value]
@@ -167,14 +167,14 @@ end
 ---Get a header from the map of headers
 ---
 ---This will first normalize the provided key. For example
----"Content-Type" will be normalized to `content_type`.
+---'Content-Type' will be normalized to `content_type`.
 ---If more than one value is provided for that header
 ---@param key string
 ---@return string[]
 function Headers:get_all(key)
-    local k = Headers.normalize_key(key or "")
+    local k = Headers.normalize_key(key or '')
     local values = self[k]
-    if type(values) == "string" then
+    if type(values) == 'string' then
         return {values}
     end
     return self[k]

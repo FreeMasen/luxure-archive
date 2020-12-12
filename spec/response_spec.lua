@@ -1,7 +1,7 @@
 local MockSocket = require 'spec.mock_socket'.MockSocket
 local Response = require 'luxure.response'.Response
 local utils = require 'luxure.utils'
-local ltn12 = require("ltn12")
+local ltn12 = require('ltn12')
 local Error = require('luxure.error').Error
 
 describe('Response', function()

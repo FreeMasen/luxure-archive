@@ -19,12 +19,12 @@ function Route.new(path)
     url.segments = {}
     url.methods = {}
     local i = 1
-    for part in string.gmatch(url.path, "[^/]+") do
+    for part in string.gmatch(url.path, '[^/]+') do
         local val = {
             id = part,
             is_var = false,
         }
-        local _s, _e, var = string.find(part, "^:(.+)")
+        local _s, _e, var = string.find(part, '^:(.+)')
         if var ~= nil then
             val.id = var
             val.is_var = true
@@ -49,7 +49,7 @@ function Route:matches(url)
     if string.find(url.path, '/$') then
         path = string.sub(path, 1, -2)
     end
-    for part in string.gmatch(url.path, "[^/]+") do
+    for part in string.gmatch(url.path, '[^/]+') do
         i = i + 1
         local segment = self.segments[i]
         if segment == nil then

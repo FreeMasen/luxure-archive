@@ -27,7 +27,7 @@ server:use(function (req, res, next)
     local start = os.time()
     local remote = req.socket:getpeername()
     next(req, res)
-    local request = string.format("%s %s %s", req.method, req.url.path, req.http_version)
+    local request = string.format('%s %s %s', req.method, req.url.path, req.http_version)
     local _, sent, _ = req.socket:getstats()
     print(
         string.format('%s - %s - [%s] "%s" %i %i "%s" "%s"',

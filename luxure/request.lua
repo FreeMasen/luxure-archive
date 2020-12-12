@@ -16,7 +16,7 @@ Request.__index = Request
 ---@param line string
 ---@return table
 local function parse_preamble(line)
-    for method, path, http_version in string.gmatch(line, "([A-Z]+) (.+) HTTP/([0-9.]+)") do
+    for method, path, http_version in string.gmatch(line, '([A-Z]+) (.+) HTTP/([0-9.]+)') do
         return {
             method = method,
             url = net_url.parse(path),
@@ -25,7 +25,7 @@ local function parse_preamble(line)
             _headers = nil,
         }
     end
-    Error.assert(false, string.format("Invalid http request first line: '%s'", line))
+    Error.assert(false, string.format('Invalid http request first line: "%s"', line))
 end
 
 ---Get the headers for this request
@@ -67,7 +67,7 @@ function Request:_parse_header()
     if self._headers == nil then
         self._headers = Headers.new()
     end
-    if line == "" then
+    if line == '' then
         return true
     else
         self._headers:append_chunk(line)

@@ -44,8 +44,8 @@ function Response.new(outgoing, send_buffer_size)
     local base = {
         headers = headers.Headers.new(),
         _status = 200,
-        body = "",
-        http_version = "1.1",
+        body = '',
+        http_version = '1.1',
         outgoing = outgoing,
         _send_buffer_size = send_buffer_size,
         chunks_sent = 0,
@@ -96,7 +96,7 @@ function Response:_serialize()
     self:content_length(#self.body)
     self.headers.server = 'Luxure'
     return self:_generate_prebody()
-        .. (self.body or "")
+        .. (self.body or '')
 end
 
 ---Generate the first line of this response without the trailing \r\n
@@ -121,8 +121,8 @@ end
 ---@param s string the text to append
 ---@return Response
 function Response:append_body(s)
-    if type(s) == "string" then
-        self.body = (self.body or "") .. s
+    if type(s) == 'string' then
+        self.body = (self.body or '') .. s
     end
     if self:_should_send() then
         self:_send_chunk()
