@@ -88,8 +88,8 @@ end
 function Server:tick()
     local incoming = Error.assert(self.sock:accept())
     local req, req_err = Request.new(incoming)
-    if not req_err then
-        print('socket error: ', req_err)
+    if req_err then
+        print(string.format('socket error: %s', req_err))
         return
     end
     local res = Response.new(incoming)
