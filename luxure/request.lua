@@ -41,6 +41,7 @@ function Request:get_headers()
     end
     return self._headers
 end
+
 ---read from the socket filling in the headers property
 function Request:_fill_headers()
     while true do

@@ -49,6 +49,9 @@ function MockSocket:receive()
 end
 
 function MockSocket:send(s)
+    if s == 'timeout' or s == 'closed' then
+        return nil, s
+    end
     self.inner = self.inner or {}
     self.sent = self.sent + #(s or "")
     table.insert(self.inner, s)
