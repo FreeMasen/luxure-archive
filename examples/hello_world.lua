@@ -1,9 +1,7 @@
--- import a module that provides the api of luasocket
-local socket = require 'socket'
 local dkjson = require 'dkjson'
 local lux = require 'luxure'
 
--- pass in the socket module you'd like to use here
+-- Create a server with the options
 local server = lux.Server.new(socket)
 
 -- use some middleware for parsing json bodies

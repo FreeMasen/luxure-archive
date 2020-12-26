@@ -1,4 +1,3 @@
-local socket = require 'socket'
 -- This comes from LuaSocket
 local mime = require 'mime'
 local lux = require 'luxure'
@@ -31,7 +30,7 @@ local function static_content(path, res)
     for line in f:lines('L') do
         res.append_body(line)
     end
-    ;res:send()
+    res:send()
     if f then f:close() end
 end
 
