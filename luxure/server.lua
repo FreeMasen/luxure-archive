@@ -98,6 +98,39 @@ function Server:route(req, res)
     end
 end
 
+--- generate html for error when in debug mode
+---@param err Error
+local function debug_error_body(err)
+    local code = err.status or '500'
+    local h2 = err.msg_with_line or 'Unknown Error'
+    local pre = err.traceback or ''
+    return string.format([[<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Error processing request: <code> %s </code></h1>
+        <h2>%s</h2>
+        <pre>%s</pre>
+    </body>
+</html>
+    ]], code, h2, pre)
+end
+
+local function error_request(env, err, res)
+    if res:has_sent() then
+        print('error sending after bytes have been sent...')
+        print(err)
+        return
+    end
+    if env == 'production' then
+        res:send(err.msg or '')
+        return
+    end
+    res:content_type('text/html'):send(debug_error_body(err))
+    return
+end
+
 ---A single step in the Server run loop
 ---which will call `accept` on the underlying socket
 ---and when that returns a client socket, it will
@@ -114,22 +147,7 @@ function Server:tick()
     self:route(req, res)
     local has_sent = res:has_sent()
     if req.err then
-        if not has_sent then
-            local msg
-            if self.env == 'production' then
-                if req.err.msg then
-                    msg = req.err.msg
-                end
-            else
-                if req.err.traceback then
-                    msg = req.err.msg_with_line .. '\n' .. req.err.traceback
-                end
-            end
-            res:send(msg)
-        else
-            print('error sending after bytes have been sent...')
-            print(req.err)
-        end
+        error_request(self.env, req.err, res)
     elseif not req.handled then
         if not has_sent then
             res:status(404):send('')
