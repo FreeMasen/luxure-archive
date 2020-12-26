@@ -140,8 +140,7 @@ function Server:tick()
     local incoming = Error.assert(self.sock:accept())
     local req, req_err = Request.new(incoming)
     if req_err then
-        print(string.format('socket error: %s', req_err))
-        return
+        return nil, req_err
     end
     local res = Response.new(incoming)
     self:route(req, res)
@@ -154,11 +153,20 @@ function Server:tick()
         end
     end
     incoming:close()
+    return 1
 end
+
 ---Start this server, blocking forever
-function Server:run()
+---@param err_callback fun(msg:string):boolean Optional callback to be run if `tick` returns an error
+function Server:run(err_callback)
+    err_callback = err_callback or function () return true end
     while true do
-        self:tick()
+        local success, msg = self:tick()
+        if not success then
+            if not err_callback(msg) then
+                return
+            end
+        end
     end
 end
 ---Add a ACL endpoint
