@@ -5,20 +5,39 @@ local methods = require 'luxure.methods'
 local Error = require 'luxure.error'.Error
 
 ---@class Server
----@field socket_mod table socket module being used by the server
+---@field private sock table socket being used by the server
 ---@field router Router The router for incoming requests
----@field middleware table List of middleware callbacks
+---@field private middleware table List of middleware callbacks
 ---@field ip string defaults to '0.0.0.0'
+---@field private env string defaults to 'production'
+---@field private backlog number|nil defaults to nil
 local Server = {}
 
 Server.__index = Server
 
----Constructor for a Server
----@param socket_mod table This should look something like luasocket
-function Server.new(socket_mod, opts)
+---Server Options
+---@class Opts
+---@field env string
+---@field backlog number
+local Opts = {}
+
+---Constructor for a Server that will use luasocket's socket
+---implementation
+---@param opts Opts The configuration of this Server
+function Server.new(opts)
+    local s = require 'socket'
+    local sock = s.tcp()
+    return Server.new_with(sock, opts)
+end
+
+---Constructor for a Server that will use the provided socket
+---this is useful for using an alternative implementation of sockets
+---@param sock table This should have an api similar to luasocket's socket type
+---@param opts Opts The configuration of this Server
+function Server.new_with(sock, opts)
     opts = opts or {}
     local base = {
-        socket_mod = socket_mod,
+        sock = sock,
         ---@type Router
         router = Router.new(),
         ---@type fun(req:Request,res:Response)
@@ -45,7 +64,6 @@ function Server:listen(port)
     if port == nil then
         port = 0
     end
-    self.sock = self.socket_mod.tcp()
     assert(self.sock:bind(self.ip, port or 0))
     self.sock:listen(self.backlog)
     local ip, resolved_port = self.sock:getsockname()
