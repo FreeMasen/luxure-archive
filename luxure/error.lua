@@ -26,7 +26,7 @@ end
 local function build_error_string(msg, status)
     if debug then
         local traceback = debug.traceback(msg, 3)
-        local info = debug.getinfo(2)
+        local info = debug.getinfo(3)
         local orig_loc = string.format('%s:%s', info.short_src or '', info.currentline or '')
         msg = string.format('%s|%s|%s', msg, traceback, orig_loc)
     end
