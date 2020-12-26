@@ -1,8 +1,14 @@
+---@class Error
+---Represents and error in the request/response cycle
+---@field msg string The original error message
+---@field msg_with_line string The original error message with the file/line number
+---@field status number The http status code to use for this response defaults to 500
+---@field traceback string The stacktrace for this error
 local Error = {
     __tostring = function(err)
         local ret = err.msg_with_line or err.msg or 'Unknown Error'
         if err.traceback ~= nil then
-            ret = ret .. string.format("\n%s", err.traceback)
+            ret = ret .. string.format('\n%s', err.traceback)
         end
         return ret
     end
@@ -20,24 +26,34 @@ local function new_error(msg, msg_with_line, status, traceback)
     setmetatable(ret, Error)
     return ret
 end
+
+local function build_error_string(msg, status)
+    if debug then
+        local traceback = debug.traceback(msg, 3)
+        local info = debug.getinfo(3)
+        local orig_loc = string.format('%s:%s', info.short_src or '', info.currentline or '')
+        msg = string.format('%s|%s|%s', msg, traceback, orig_loc)
+    end
+    return string.format('%s|%i', msg, status or 500)
+end
 ---Wrapper around assert that coverts the
 ---message into an pipe sepereted list
----this format will be used by pcall to reconstruct
+---this format will be used by Error.pcall to reconstruct
 ---an Error if any calls to assert raise an error
 ---@param test boolean
 ---@param msg string
 ---@param status number defualts to 500
 function Error.assert(test, msg, status)
-    msg = msg or 'assertion failed'
-    if debug then
-        local traceback = debug.traceback(msg, 2)
-        local info = debug.getinfo(2)
-        local orig_loc = string.format('%s:%s', info.short_src or '', info.currentline or '')
-        msg = string.format('%s|%s|%s', msg, traceback, orig_loc)
-    end
-    return assert(test, string.format('%s|%i', msg, status or 500))
+    msg = build_error_string(msg or 'assertion failed', status)
+    return assert(test, msg)
 end
 
+---Raise and error with a message and status
+---@param msg string
+---@param status number
+function Error.raise(msg, status)
+    error(build_error_string(msg, status))
+end
 local function parse_error_msg(s)
     local i = 1
     local keys = {
@@ -62,6 +78,9 @@ local function parse_error_msg(s)
     return values
 end
 
+---Wrapper around `pcall` that will reconstruct the Error object
+---on failure
+---@return Error | string
 function Error.pcall(...)
     local res = table.pack(pcall(...))
     local success = res[1]
@@ -74,7 +93,7 @@ function Error.pcall(...)
         local status = math.tointeger(parsed.status) or 500
         return false, new_error(
             stripped_message,
-            string.format('%s%s', parsed.orig_loc, stripped_message),
+            string.format('%s %s', parsed.orig_loc, stripped_message),
             status,
             parsed.traceback
         )

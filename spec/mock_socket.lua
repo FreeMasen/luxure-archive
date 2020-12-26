@@ -22,7 +22,7 @@ function MockSocket:listen(backlog)
 end
 
 function MockSocket:getsockname()
-    return "0.0.0.0", 0
+    return '0.0.0.0', 0
 end
 
 function MockSocket:getstats()
@@ -35,7 +35,7 @@ end
 
 function MockSocket.new_with_preamble(method, path)
     return MockSocket.new({
-        string.format("%s %s HTTP/1.1", string.upper(method), path)
+        string.format('%s %s HTTP/1.1', string.upper(method), path)
     })
 end
 
@@ -44,13 +44,16 @@ function MockSocket:receive()
         return nil, 'empty'
     end
     local part = table.remove(self.inner, 1)
-    self.recvd = self.recvd + #(part or "")
+    self.recvd = self.recvd + #(part or '')
     return part
 end
 
 function MockSocket:send(s)
+    if s == 'timeout' or s == 'closed' then
+        return nil, s
+    end
     self.inner = self.inner or {}
-    self.sent = self.sent + #(s or "")
+    self.sent = self.sent + #(s or '')
     table.insert(self.inner, s)
     if s then
         return #s
@@ -83,7 +86,7 @@ function MockTcp:listen(backlog)
 end
 
 function MockTcp:getsockname()
-    return "0.0.0.0", 0
+    return '0.0.0.0', 0
 end
 
 local MockModule = {}
@@ -94,7 +97,7 @@ function MockModule.new(inner)
     return MockModule
 end
 function MockModule.tcp()
-    local list = assert(table.remove(sockets), "No sockets in the list")
+    local list = assert(table.remove(sockets), 'No sockets in the list')
     return MockTcp.new(list)
 end
 function MockModule.bind(ip, port)

@@ -4,18 +4,18 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/freemasen/luxure/CI)
 ![LuaRocks](https://img.shields.io/luarocks/v/FreeMasen/luxure)
 
+![Luxure Logo](./luxure.svg)
+
 An HTTP Server framework for Lua
 
 ## Usage
 
 ```lua
--- import a module that provides the api of luasocket
-local socket = require 'socket'
 local dkjson = require 'dkjson'
 local lux = require 'luxure'
 
--- pass in the socket module you'd like to use here
-local server = lux.Server.new(socket)
+-- Create a server with the options
+local server = lux.Server.new({env = 'debug'})
 
 -- use some middleware for parsing json bodies
 server:use(function (req, res, next)
@@ -38,7 +38,7 @@ server:use(function (req, res, next)
     local start = os.time()
     local remote = req.socket:getpeername()
     next(req, res)
-    local request = string.format("%s %s %s", req.method, req.url.path, req.http_version)
+    local request = string.format('%s %s %s', req.method, req.url.path, req.http_version)
     local _, sent, _ = req.socket:getstats()
     print(
         string.format('%s - %s - [%s] "%s" %i %i "%s" "%s"',

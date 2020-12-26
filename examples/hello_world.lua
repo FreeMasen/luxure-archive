@@ -1,9 +1,7 @@
--- import a module that provides the api of luasocket
-local socket = require 'socket'
 local dkjson = require 'dkjson'
 local lux = require 'luxure'
 
--- pass in the socket module you'd like to use here
+-- Create a server with the options
 local server = lux.Server.new(socket)
 
 -- use some middleware for parsing json bodies
@@ -27,7 +25,7 @@ server:use(function (req, res, next)
     local start = os.time()
     local remote = req.socket:getpeername()
     next(req, res)
-    local request = string.format("%s %s %s", req.method, req.url.path, req.http_version)
+    local request = string.format('%s %s %s', req.method, req.url.path, req.http_version)
     local _, sent, _ = req.socket:getstats()
     print(
         string.format('%s - %s - [%s] "%s" %i %i "%s" "%s"',

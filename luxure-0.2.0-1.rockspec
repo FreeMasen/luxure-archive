@@ -1,8 +1,8 @@
 package = "luxure"
-version = "0.1.1-1"
+version = "0.2.0-1"
 source = {
    url = "git://github.com/FreeMasen/luxure",
-   tag = "v0.1.1"
+   tag = "v0.2.0-pre"
 }
 description = {
    homepage = "https://github.com/FreeMasen/luxure",
@@ -10,7 +10,8 @@ description = {
 }
 dependencies = {
    "lua >= 5.1",
-   "net-url >= 0.9"
+   "net-url >= 0.9",
+   "luasocket >= 3.0rc1-2"
 }
 build = {
    type = "builtin",

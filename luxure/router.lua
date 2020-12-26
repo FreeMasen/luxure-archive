@@ -26,7 +26,6 @@ function Router:route(req, res)
                 res:status(err.status or 500)
             end
             req.err = err
-            local u = require 'luxure.utils'
             req.handled = handled
         end
     end
