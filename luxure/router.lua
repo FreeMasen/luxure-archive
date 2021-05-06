@@ -33,7 +33,7 @@ end
 ---Register a single route
 ---@param path string The route for this request
 ---@param method string the HTTP method for this request
----@param callback function(luxure.request.Request, luxure.response.Response)
+---@param callback fun(req:Request, res:Response)
 ---The callback this route will use to handle requests
 function Router:register_handler(path, method, callback)
     if self.routes[path] == nil then
