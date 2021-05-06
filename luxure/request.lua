@@ -18,16 +18,15 @@ Request.__index = Request
 ---@param line string
 ---@return table
 local function parse_preamble(line)
-    for method, path, http_version in string.gmatch(line, '([A-Z]+) (.+) HTTP/([0-9.]+)') do
-        return {
-            method = method,
-            url = net_url.parse(path),
-            http_version = http_version,
-            _body = nil,
-            _headers = nil,
-        }
-    end
-    Error.assert(false, string.format('Invalid http request first line: "%s"', line))
+    local start, _, method, path, http_version = string.find(line, '([A-Z]+) (.+) HTTP/([0-9.]+)')
+    Error.assert(start, string.format('Invalid http request first line: "%s"', line))
+    return {
+        method = method,
+        url = net_url.parse(path),
+        http_version = http_version,
+        _body = nil,
+        _headers = nil,
+    }
 end
 
 ---Get the headers for this request
