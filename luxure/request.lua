@@ -3,11 +3,13 @@ local Headers = require 'luxure.headers'.Headers
 local Error = require 'luxure.error'.Error
 
 ---@class Request
----@field method string the HTTP method for this request
----@field url table The parse url of this request
----@field http_version string The http version from the request preamble
----@field headers Headers The HTTP headers for this request
----@field body string The contents of the request
+---@field public method string the HTTP method for this request
+---@field public url table The parse url of this request
+---@field public http_version string The http version from the request preamble
+---@field public headers Headers The HTTP headers for this request
+---@field public body string The contents of the request
+---@field private err string|nil The _last_ error from the handler or middleware
+---@field public handled boolean|nil `true` when the request has been handled
 local Request = {}
 
 Request.__index = Request

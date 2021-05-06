@@ -6,9 +6,9 @@ local Error = require 'luxure.error'.Error
 
 ---@class Server
 ---@field private sock table socket being used by the server
----@field router Router The router for incoming requests
+---@field public router Router The router for incoming requests
 ---@field private middleware table List of middleware callbacks
----@field ip string defaults to '0.0.0.0'
+---@field public ip string defaults to '0.0.0.0'
 ---@field private env string defaults to 'production'
 ---@field private backlog number|nil defaults to nil
 local Server = {}
@@ -17,8 +17,8 @@ Server.__index = Server
 
 ---Server Options
 ---@class Opts
----@field env string
----@field backlog number
+---@field public env string
+---@field public backlog number
 local Opts = {}
 
 ---Constructor for a Server that will use luasocket's socket

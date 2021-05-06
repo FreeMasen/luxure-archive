@@ -1,7 +1,7 @@
 local Route = require 'luxure.route'.Route
 local Error = require 'luxure.error'.Error
 ---@class Router
----@field routes table List of Routes registered
+---@field public routes table List of Routes registered
 local Router = {}
 
 Router.__index = Router
@@ -33,7 +33,8 @@ end
 ---Register a single route
 ---@param path string The route for this request
 ---@param method string the HTTP method for this request
----@param callback function(luxure.request.Request, luxure.response.Response) The callback this route will use to handle requests
+---@param callback function(luxure.request.Request, luxure.response.Response)
+---The callback this route will use to handle requests
 function Router:register_handler(path, method, callback)
     if self.routes[path] == nil then
         self.routes[path] = Route.new(path)

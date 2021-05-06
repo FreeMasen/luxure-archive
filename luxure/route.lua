@@ -4,10 +4,10 @@ local Error = require 'luxure.error'.Error
 ---@class Route
 ---
 ---A single instance of a route
----@field path string raw string that comprises this path
----@field segments table list of ids or path segments, each segment may be a parameter if preceded by a :
----@field vars table list of variables that will be parsed from the segments field
----@field methods table list of callbacks registered to a method/path pair
+---@field public path string raw string that comprises this path
+---@field public segments table list of ids or path segments, each segment may be a parameter if preceded by a :
+---@field public vars table list of variables that will be parsed from the segments field
+---@field public methods table list of callbacks registered to a method/path pair
 local Route = {}
 
 Route.__index = Route
@@ -49,7 +49,7 @@ function Route:matches(url)
     if string.find(url.path, '/$') then
         path = string.sub(path, 1, -2)
     end
-    for part in string.gmatch(url.path, '[^/]+') do
+    for part in string.gmatch(path, '[^/]+') do
         i = i + 1
         local segment = self.segments[i]
         if segment == nil then

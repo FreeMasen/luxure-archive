@@ -29,9 +29,9 @@ local function send_all(sock, s)
 end
 
 ---@class Response
----@field headers Headers The HTTP headers for this response
----@field body string the contents of the response body
----@field outgoing table The socket this response will send on
+---@field public headers Headers The HTTP headers for this response
+---@field public body string the contents of the response body
+---@field public outgoing table The socket this response will send on
 local Response = {}
 
 Response.__index = Response
