@@ -36,10 +36,10 @@ local Response = {}
 
 Response.__index = Response
 
----create a response for to a corisponding request
+---create a response for to a corresponding request
 ---@param outgoing table anything that can call `:send()`
----@param send_buffer_size number|nil If provided, sending will happen
----in a buffered fashion
+---@param send_buffer_size number|nil If provided, sending will happen in a buffered fashion
+---@return Response
 function Response.new(outgoing, send_buffer_size)
     local base = {
         headers = headers.Headers.new(),
