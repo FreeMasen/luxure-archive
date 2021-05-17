@@ -21,6 +21,24 @@ Server.__index = Server
 ---@field public backlog number
 local Opts = {}
 
+function Opts.new(t)
+    t = t or {}
+    return setmetatable({
+        backlog = t.backlog,
+        env = t.env or 'production',
+    }, Opts)
+end
+
+function Opts:set_backlog(backlog)
+    self.backlog = backlog
+    return self
+end
+
+function Opts:set_env(env)
+    self.env = env
+    return self
+end
+
 ---Constructor for a Server that will use luasocket's socket
 ---implementation
 ---@param opts Opts The configuration of this Server
@@ -172,134 +190,167 @@ end
 ---Add a ACL endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:acl(route, handler)end
 ---Add a BIND endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:bind(route, handler)end
 ---Add a CHECKOUT endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:checkout(route, handler)end
 ---Add a CONNECT endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:connect(route, handler)end
 ---Add a COPY endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:copy(route, handler)end
 ---Add a DELETE endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:delete(route, handler)end
 ---Add a GET endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:get(route, handler)end
 ---Add a HEAD endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:head(route, handler)end
 ---Add a LINK endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:link(route, handler)end
 ---Add a LOCK endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:lock(route, handler)end
 ---Add a M-SEARCH endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:m_search(route, handler)end
 ---Add a MERGE endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:merge(route, handler)end
 ---Add a MKACTIVITY endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:mkactivity(route, handler)end
 ---Add a MKCALENDAR endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:mkcalendar(route, handler)end
 ---Add a MKCOL endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:mkcol(route, handler)end
 ---Add a MOVE endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:move(route, handler)end
 ---Add a NOTIFY endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:notify(route, handler)end
 ---Add a OPTIONS endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:options(route, handler)end
 ---Add a PATCH endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:patch(route, handler)end
 ---Add a POST endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:post(route, handler)end
 ---Add a PROPFIND endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:propfind(route, handler)end
 ---Add a PROPPATCH endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:proppatch(route, handler)end
 ---Add a PURGE endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:purge(route, handler)end
 ---Add a PUT endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:put(route, handler)end
 ---Add a REBIND endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:rebind(route, handler)end
 ---Add a REPORT endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:report(route, handler)end
 ---Add a SEARCH endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:search(route, handler)end
 ---Add a SUBSCRIBE endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:subscribe(route, handler)end
 ---Add a TRACE endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:trace(route, handler)end
 ---Add a UNBIND endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:unbind(route, handler)end
 ---Add a UNLINK endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:unlink(route, handler)end
 ---Add a UNLOCK endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:unlock(route, handler)end
 ---Add a UNSUBSCRIBE endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
+--luacheck: no unused args
 function Server:unsubscribe(route, handler)end
 
 for _, method in ipairs(methods) do
@@ -311,4 +362,5 @@ end
 
 return {
     Server = Server,
+    Opts = Opts,
 }

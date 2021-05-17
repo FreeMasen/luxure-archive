@@ -144,7 +144,6 @@ function Response:_send_chunk()
     local to_send = self.body
     if not self:has_sent() then
         to_send = self:_generate_prebody()..to_send
-    else
     end
     send_all(self.outgoing, to_send)
     self.body = ''

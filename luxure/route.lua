@@ -24,6 +24,7 @@ function Route.new(path)
             id = part,
             is_var = false,
         }
+        --luacheck: ignore _s _e
         local _s, _e, var = string.find(part, '^:(.+)')
         if var ~= nil then
             val.id = var
