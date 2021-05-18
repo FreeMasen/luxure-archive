@@ -17,7 +17,7 @@ Server.__index = Server
 
 ---Server Options
 ---@class Opts
----@field public env string
+---@field public env 'debug'|'production'
 ---@field public backlog number
 local Opts = {}
 

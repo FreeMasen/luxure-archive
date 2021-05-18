@@ -2,7 +2,7 @@
 local mime = require 'mime'
 local lux = require 'luxure'
 
-local server = lux.Server.new({env = 'debug'})
+local server = lux.Server.new(lux.Opts.new():env('debug'))
 server:listen(9090)
 -- use some middleware that will check for
 -- the authorization header with a password 'SUPERSECRET'
