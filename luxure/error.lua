@@ -1,9 +1,9 @@
 ---@class Error
 ---Represents and error in the request/response cycle
----@field msg string The original error message
----@field msg_with_line string The original error message with the file/line number
----@field status number The http status code to use for this response defaults to 500
----@field traceback string The stacktrace for this error
+---@field public msg string The original error message
+---@field public msg_with_line string The original error message with the file/line number
+---@field public status number The http status code to use for this response defaults to 500
+---@field public traceback string The stacktrace for this error
 local Error = {
     __tostring = function(err)
         local ret = err.msg_with_line or err.msg or 'Unknown Error'

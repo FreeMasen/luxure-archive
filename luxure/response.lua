@@ -29,17 +29,17 @@ local function send_all(sock, s)
 end
 
 ---@class Response
----@field headers Headers The HTTP headers for this response
----@field body string the contents of the response body
----@field outgoing table The socket this response will send on
+---@field public headers Headers The HTTP headers for this response
+---@field public body string the contents of the response body
+---@field public outgoing table The socket this response will send on
 local Response = {}
 
 Response.__index = Response
 
----create a response for to a corisponding request
+---create a response for to a corresponding request
 ---@param outgoing table anything that can call `:send()`
----@param send_buffer_size number|nil If provided, sending will happen
----in a buffered fashion
+---@param send_buffer_size number|nil If provided, sending will happen in a buffered fashion
+---@return Response
 function Response.new(outgoing, send_buffer_size)
     local base = {
         headers = headers.Headers.new(),
@@ -144,7 +144,6 @@ function Response:_send_chunk()
     local to_send = self.body
     if not self:has_sent() then
         to_send = self:_generate_prebody()..to_send
-    else
     end
     send_all(self.outgoing, to_send)
     self.body = ''

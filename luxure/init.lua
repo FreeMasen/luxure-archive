@@ -8,6 +8,7 @@ local server = require 'luxure.server'
 
 return {
     Error = error.Error,
+    Opts = server.Opts,
     Headers = headers.Headers,
     Request = request.Request,
     Response = response.Response,

@@ -2,7 +2,7 @@ local dkjson = require 'dkjson'
 local lux = require 'luxure'
 
 -- Create a server with the options
-local server = lux.Server.new(socket)
+local server = lux.Server.new(lux.Opts.new({env = 'debug'}))
 
 -- use some middleware for parsing json bodies
 server:use(function (req, res, next)

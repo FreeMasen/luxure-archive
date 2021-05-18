@@ -2,52 +2,52 @@ local Error = require 'luxure.error'.Error
 ---@class Headers
 ---A map of the key value pairs from the header portion
 ---of an HTTP request
----@field accept string
----@field accept_charset string
----@field accept_encoding string
----@field accept_language string
----@field accept_ranges string
----@field age string
----@field allow string
----@field authorization string
----@field cache_control string
----@field connection string
----@field content_encoding string
----@field content_language string
----@field content_length string
----@field content_location string
----@field content_md5 string
----@field content_range string
----@field content_type string
----@field date string
----@field etag string
----@field expect string
----@field expires string
----@field from string
----@field host string
----@field if_match string
----@field if_modified_since string
----@field if_none_match string
----@field if_range string
----@field if_unmodified_since string
----@field last_modified string
----@field location string
----@field max_forwards string
----@field pragma string
----@field proxy_authenticate string
----@field proxy_authorization string
----@field range string
----@field referer string
----@field retry_after string
----@field server string
----@field te string
----@field trailer string
----@field upgrade string
----@field user_agent string
----@field vary string
----@field via string
----@field warning string
----@field www_authenticate string
+---@field public accept string
+---@field public accept_charset string
+---@field public accept_encoding string
+---@field public accept_language string
+---@field public accept_ranges string
+---@field public age string
+---@field public allow string
+---@field public authorization string
+---@field public cache_control string
+---@field public connection string
+---@field public content_encoding string
+---@field public content_language string
+---@field public content_length string
+---@field public content_location string
+---@field public content_md5 string
+---@field public content_range string
+---@field public content_type string
+---@field public date string
+---@field public etag string
+---@field public expect string
+---@field public expires string
+---@field public from string
+---@field public host string
+---@field public if_match string
+---@field public if_modified_since string
+---@field public if_none_match string
+---@field public if_range string
+---@field public if_unmodified_since string
+---@field public last_modified string
+---@field public location string
+---@field public max_forwards string
+---@field public pragma string
+---@field public proxy_authenticate string
+---@field public proxy_authorization string
+---@field public range string
+---@field public referer string
+---@field public retry_after string
+---@field public server string
+---@field public te string
+---@field public trailer string
+---@field public upgrade string
+---@field public user_agent string
+---@field public vary string
+---@field public via string
+---@field public warning string
+---@field public www_authenticate string
 local Headers = {}
 
 Headers.__index = Headers
@@ -67,7 +67,6 @@ end
 ---@param value string
 ---@return string
 local function serialize_header(key, value)
-    local utils = require 'luxure.utils'
     if type(value) == 'table' then
         value = value[#value]
     end
