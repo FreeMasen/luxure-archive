@@ -21,6 +21,9 @@ Server.__index = Server
 ---@field public backlog number
 local Opts = {}
 
+---Create a new options object
+---@param t table|nil If not the pre-set options
+---@return Opts
 function Opts.new(t)
     t = t or {}
     return setmetatable({
@@ -29,11 +32,16 @@ function Opts.new(t)
     }, Opts)
 end
 
+---Set the backlog property
+---@param backlog number
+---@return Opts
 function Opts:set_backlog(backlog)
     self.backlog = backlog
     return self
 end
-
+---Set the env property
+---@param env 'production'|'debug' The env string
+---@return Opts
 function Opts:set_env(env)
     self.env = env
     return self
