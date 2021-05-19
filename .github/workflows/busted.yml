@@ -26,6 +26,8 @@ jobs:
         run: luarocks install luacov
       - name: install cosock
         run: luarocks install cosock
+      - name: install luasec
+        run: luarocks install luasec
       - name: install net-url
         run: luarocks install net-url
       - name: install logface
