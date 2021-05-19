@@ -1,5 +1,6 @@
 local dkjson = require 'dkjson'
 local lux = require 'luxure'
+local cosock = require "cosock"
 
 -- Create a server with the options
 local server = lux.Server.new(lux.Opts.new({env = 'debug'}))
@@ -54,7 +55,7 @@ server:get('/fail', function()
     -- return 500 to the caller and set your message as the body.
     -- if you were to set the environment variable `LUXURE_ENV`
     -- to a value other than 'production' and it will also send
-    -- the origial file/line number and the backtrace from the error
+    -- the original file/line number and the backtrace from the error
     lux.Error.assert(false, 'I always fail')
 end)
 
@@ -79,15 +80,78 @@ end)
 -- define a GET endpoint, expecting query params
 server:get('/hello', function(req, res)
     if req.url.query.name == nil then
-        res:status(404):sent()
+        res:status(404):send()
         return
     end
     res:send(string.format('Hello %s!', req.url.query.name))
 end)
 
+server:get('/dynamic', function(req, res)
+    res:content_type('text/html'):send([[<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<h1>Dynamic !</h1>
+<ul id="list">
+</ul>
+<script>
+(function() {
+    let ul = document.getElementById('list')
+    let s = new EventSource('/sse')
+    function li(text) {
+        let ele = document.createElement('li');
+        let node = document.createTextNode(text);
+        ele.appendChild(node)
+        return ele
+    }
+    s.onmessage = function(ev) {
+        let text = `${new Date()} ${ev.data}`
+        let node = li(text)
+        ul.appendChild(node)
+    }
+    s.onerror = function(ev) {
+        let text = `${new Date()} Error in event stream`
+        let node = li(text)
+        ul.appendChild(node)
+    }
+    s.addEventListener('clear', function(ev) {
+        while (ul.hasChildNodes()) {
+            ul.removeChild(ul.firstChild);
+        }
+    });
+    
+})()
+</script>
+</body>
+</html>
+]])
+end)
+
+server:get('/sse', function(req, res)
+    print('sse')
+    local socket = cosock.socket;
+    local Event = require 'luxure.sse'.Event
+    local sse = res:sse({}, true)
+    -- 16 because our keepalive will be 15
+    local wait = 16
+    while true do
+        if wait == 0 then
+            sse:send(Event.new():event('clear'):data('clearing'))
+            wait = 5
+        else
+            sse:send(Event.new():data(string.format('next tick in %s', wait)))
+            socket.sleep(wait)
+        end
+        if wait >= 1 then
+            wait = wait - 1
+        end
+    end
+end)
+
 -- open the server's socket on port 8080
 server:listen(8080)
-
+print(string.format('listening on http://%s:%s', server.sock:getsockname()))
 -- Run the server forever, this will block the application
 -- from exiting.
 server:run()

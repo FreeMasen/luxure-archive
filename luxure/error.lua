@@ -1,3 +1,4 @@
+local log = require 'log'
 ---@class Error
 ---Represents and error in the request/response cycle
 ---@field public msg string The original error message
@@ -17,6 +18,7 @@ local Error = {
 Error.__index = Error
 
 local function new_error(msg, msg_with_line, status, traceback)
+    log.error(msg_with_line)
     local ret = {
         msg = msg,
         msg_with_line = msg_with_line,
@@ -36,6 +38,7 @@ local function build_error_string(msg, status)
     end
     return string.format('%s|%i', msg, status or 500)
 end
+
 ---Wrapper around assert that coverts the
 ---message into an pipe sepereted list
 ---this format will be used by Error.pcall to reconstruct

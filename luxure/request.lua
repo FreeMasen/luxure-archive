@@ -1,6 +1,7 @@
 local net_url = require 'net.url'
 local Headers = require 'luxure.headers'.Headers
 local Error = require 'luxure.error'.Error
+local log = require "log"
 
 ---@class Request
 ---@field public method string the HTTP method for this request
@@ -126,6 +127,7 @@ end
 ---@param socket table The tcp client socket for this request
 ---@return Request|nil, string|nil
 function Request.new(socket)
+    log.trace('new Request')
     Error.assert(socket, 'cannot create request with nil socket')
     local r = {
         socket = socket,

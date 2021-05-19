@@ -2,10 +2,18 @@ local headers = require 'luxure.headers'
 local statuses = require 'luxure.status'
 local Error = require 'luxure.error'.Error
 
+---@class Response
+---@field public headers Headers The HTTP headers for this response
+---@field public body string the contents of the response body
+---@field public outgoing table The socket this response will send on
+---@field private should_close boolean
+local Response = {}
+Response.__index = Response
+
 ---Send all text provided, retrying on failure or timeout
 ---@param sock table The client socket to send on
 ---@param s string The string to send
-local function send_all(sock, s)
+function Response._send_all(sock, s)
     local total_sent = 0
     local target = #s
     local retries = 0
@@ -28,14 +36,6 @@ local function send_all(sock, s)
     return total_sent
 end
 
----@class Response
----@field public headers Headers The HTTP headers for this response
----@field public body string the contents of the response body
----@field public outgoing table The socket this response will send on
-local Response = {}
-
-Response.__index = Response
-
 ---create a response for to a corresponding request
 ---@param outgoing table anything that can call `:send()`
 ---@param send_buffer_size number|nil If provided, sending will happen in a buffered fashion
@@ -49,6 +49,7 @@ function Response.new(outgoing, send_buffer_size)
         outgoing = outgoing,
         _send_buffer_size = send_buffer_size,
         chunks_sent = 0,
+        should_close = true,
     }
     setmetatable(base, Response)
     return base
@@ -117,6 +118,18 @@ function Response:_generate_prebody()
         .. self.headers:serialize() .. '\r\n'
 end
 
+function Response:sse(headers, keepalive)
+    local Sse = require 'luxure.sse'.Sse;
+    for key, value in pairs(headers or {}) do
+        self.headers:append(key, value)
+    end
+    self.headers.content_type = 'text/event-stream'
+    self.headers.cache_control = 'no-cache'
+    self.headers.content_length = nil
+    self:_send_chunk()
+    return Sse.new(self, keepalive)
+end
+
 ---Append text to the body
 ---@param s string the text to append
 ---@return Response
@@ -145,7 +158,7 @@ function Response:_send_chunk()
     if not self:has_sent() then
         to_send = self:_generate_prebody()..to_send
     end
-    send_all(self.outgoing, to_send)
+    Response._send_all(self.outgoing, to_send)
     self.body = ''
 end
 
@@ -160,9 +173,9 @@ function Response:send(s)
     end
     if self._send_buffer_size == nil
     or not self:has_sent() then
-        send_all(self.outgoing, self:_serialize())
+        Response._send_all(self.outgoing, self:_serialize())
     else
-        send_all(self.outgoing, self.body)
+        Response._send_all(self.outgoing, self.body)
     end
 end
 
@@ -196,6 +209,10 @@ function Response:has_sent()
     local _, s = self.outgoing:getstats()
     self._has_sent = s > 0
     return self._has_sent
+end
+
+function Response:close()
+    self.outgoing:close()
 end
 
 return {

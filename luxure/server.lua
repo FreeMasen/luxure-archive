@@ -1,8 +1,12 @@
+local log = require 'log'
 local Router = require 'luxure.router'.Router
 local Request = require 'luxure.request'.Request
 local Response = require 'luxure.response'.Response
 local methods = require 'luxure.methods'
 local Error = require 'luxure.error'.Error
+local cosock = require "cosock"
+
+---@alias handler fun(req: Request, res: Response)
 
 ---@class Server
 ---@field private sock table socket being used by the server
@@ -51,8 +55,8 @@ end
 ---implementation
 ---@param opts Opts The configuration of this Server
 function Server.new(opts)
-    local s = require 'socket'
-    local sock = s.tcp()
+    local sock = cosock.socket.tcp()
+    sock:setoption('reuseaddr', true)
     return Server.new_with(sock, opts)
 end
 
@@ -61,7 +65,7 @@ end
 ---@param sock table This should have an api similar to luasocket's socket type
 ---@param opts Opts The configuration of this Server
 function Server.new_with(sock, opts)
-    opts = opts or {}
+    opts = opts or Opts.new()
     local base = {
         sock = sock,
         ---@type Router
@@ -75,8 +79,7 @@ function Server.new_with(sock, opts)
         ---@type number
         backlog = opts.backlog,
     }
-    setmetatable(base, Server)
-    return base
+    return setmetatable(base, Server)
 end
 
 ---Override the default IP address
@@ -84,6 +87,7 @@ end
 function Server:set_ip(ip)
     self.ip = ip
 end
+
 ---Attempt to open a socket
 ---@param port number|nil If provided, the port this server will attempt to bind on
 function Server:listen(port)
@@ -117,11 +121,13 @@ function Server:use(middleware)
 end
 
 function Server:route(req, res)
+    log.trace('Server:route')
     if self.middleware then
         self.middleware(req, res)
     else
         self.router:route(req, res)
     end
+    log.trace('Server:route routed')
 end
 
 --- generate html for error when in debug mode
@@ -164,37 +170,46 @@ end
 --the registered middleware and reoutes
 function Server:tick()
     local incoming = Error.assert(self.sock:accept())
-    local req, req_err = Request.new(incoming)
-    if req_err then
-        return nil, req_err
-    end
-    local res = Response.new(incoming)
-    self:route(req, res)
-    local has_sent = res:has_sent()
-    if req.err then
-        error_request(self.env, req.err, res)
-    elseif not req.handled then
-        if not has_sent then
-            res:status(404):send('')
+
+    cosock.spawn(function()
+        local req, req_err = Request.new(incoming)
+        if req_err then
+            return nil, req_err
         end
-    end
-    incoming:close()
-    return 1
+        local res = Response.new(incoming)
+        self:route(req, res)
+        local has_sent = res:has_sent()
+        if req.err then
+            error_request(self.env, req.err, res)
+        elseif not req.handled then
+            if not has_sent then
+                res:status(404):send('')
+            end
+        end
+        if res.should_close then
+            res:close()
+        end
+        return 1
+    end)
 end
 
 ---Start this server, blocking forever
 ---@param err_callback fun(msg:string):boolean Optional callback to be run if `tick` returns an error
 function Server:run(err_callback)
     err_callback = err_callback or function () return true end
-    while true do
-        local success, msg = self:tick()
-        if not success then
-            if not err_callback(msg) then
-                return
+    cosock.spawn(function()
+        while true do
+            local success, msg = self:tick()
+            if not success then
+                if not err_callback(msg) then
+                    return
+                end
             end
         end
-    end
+    end, 'luxure-main-loop')
+    cosock.run()
 end
+
 ---Add a ACL endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
