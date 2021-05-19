@@ -15,6 +15,7 @@ local cosock = require "cosock"
 ---@field public ip string defaults to '0.0.0.0'
 ---@field private env string defaults to 'production'
 ---@field private backlog number|nil defaults to nil
+---@field private async boolean If the server should spawn a cosock runtime and task for each incoming request
 local Server = {}
 
 Server.__index = Server
@@ -23,8 +24,9 @@ Server.__index = Server
 ---@class Opts
 ---@field public env 'debug'|'production'
 ---@field public backlog number
+---@field public async boolean
 local Opts = {}
-
+Opts.__index = Opts
 ---Create a new options object
 ---@param t table|nil If not the pre-set options
 ---@return Opts
@@ -33,6 +35,7 @@ function Opts.new(t)
     return setmetatable({
         backlog = t.backlog,
         env = t.env or 'production',
+        async = t.async,
     }, Opts)
 end
 
@@ -43,11 +46,20 @@ function Opts:set_backlog(backlog)
     self.backlog = backlog
     return self
 end
+
 ---Set the env property
 ---@param env 'production'|'debug' The env string
 ---@return Opts
 function Opts:set_env(env)
     self.env = env
+    return self
+end
+
+---Set the env property
+---@param async boolean
+---@return Opts
+function Opts:set_async(async)
+    self.async = async
     return self
 end
 
@@ -78,6 +90,8 @@ function Server.new_with(sock, opts)
         env = opts.env or 'production',
         ---@type number
         backlog = opts.backlog,
+        ---@type boolean
+        async = opts.async
     }
     return setmetatable(base, Server)
 end
@@ -163,40 +177,41 @@ local function error_request(env, err, res)
     return
 end
 
+function Server:_tick(incoming)
+    local req, req_err = Request.new(incoming)
+    if req_err then
+        return nil, req_err
+    end
+    local res = Response.new(incoming)
+    self:route(req, res)
+    local has_sent = res:has_sent()
+    if req.err then
+        error_request(self.env, req.err, res)
+    elseif not req.handled then
+        if not has_sent then
+            res:status(404):send('')
+        end
+    end
+    if res.should_close then
+        res:close()
+    end
+    return 1
+end
+
 ---A single step in the Server run loop
 ---which will call `accept` on the underlying socket
 ---and when that returns a client socket, it will
 --attempt to route the Request/Response objects through
---the registered middleware and reoutes
+--the registered middleware and routes
 function Server:tick()
     local incoming = Error.assert(self.sock:accept())
-
-    cosock.spawn(function()
-        local req, req_err = Request.new(incoming)
-        if req_err then
-            return nil, req_err
-        end
-        local res = Response.new(incoming)
-        self:route(req, res)
-        local has_sent = res:has_sent()
-        if req.err then
-            error_request(self.env, req.err, res)
-        elseif not req.handled then
-            if not has_sent then
-                res:status(404):send('')
-            end
-        end
-        if res.should_close then
-            res:close()
-        end
-        return 1
-    end)
+    if self.async then
+        cosock.spawn(function() self:_tick(incoming) end, '')
+    else
+        self:_tick(incoming)
+    end
 end
-
----Start this server, blocking forever
----@param err_callback fun(msg:string):boolean Optional callback to be run if `tick` returns an error
-function Server:run(err_callback)
-    err_callback = err_callback or function () return true end
+function Server:_run(err_callback)
     cosock.spawn(function()
         while true do
             local success, msg = self:tick()
@@ -208,6 +223,19 @@ function Server:run(err_callback)
         end
     end, 'luxure-main-loop')
     cosock.run()
+end
+---Start this server, blocking forever
+---@param err_callback fun(msg:string):boolean Optional callback to be run if `tick` returns an error
+function Server:run(err_callback)
+    err_callback = err_callback or function () return true end
+    if self.async then
+        cosock.spawn(function()
+            self:_run(err_callback)
+        end, 'luxure-main-loop')
+        cosock.run()
+    else
+        self:_run(err_callback)
+    end
 end
 
 ---Add a ACL endpoint

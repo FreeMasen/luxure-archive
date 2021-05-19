@@ -3,7 +3,11 @@ local lux = require 'luxure'
 local cosock = require "cosock"
 
 -- Create a server with the options
-local server = lux.Server.new(lux.Opts.new({env = 'debug'}))
+local server = lux.Server.new(
+    lux.Opts.new()
+        :set_env('debug') -- debug html on 500s
+        :set_spawn_requests(true) -- spawn coroutines for incoming requests
+)
 
 -- use some middleware for parsing json bodies
 server:use(function (req, res, next)
