@@ -1,4 +1,3 @@
-local log = require 'log'
 local Router = require 'luxure.router'.Router
 local Request = require 'luxure.request'.Request
 local Response = require 'luxure.response'.Response
@@ -68,7 +67,6 @@ end
 ---@param opts Opts The configuration of this Server
 function Server.new(opts)
     local sock = cosock.socket.tcp()
-    sock:setoption('reuseaddr', true)
     return Server.new_with(sock, opts)
 end
 
@@ -135,13 +133,11 @@ function Server:use(middleware)
 end
 
 function Server:route(req, res)
-    log.trace('Server:route')
     if self.middleware then
         self.middleware(req, res)
     else
         self.router:route(req, res)
     end
-    log.trace('Server:route routed')
 end
 
 --- generate html for error when in debug mode
