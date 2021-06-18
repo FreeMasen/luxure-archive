@@ -1,6 +1,7 @@
 local Router = require 'luxure.router'.Router
-local Request = require 'luxure.request'.Request
-local Response = require 'luxure.response'.Response
+local lunch = require 'luncheon'
+local Request = lunch.Request
+local Response = lunch.Response
 local methods = require 'luxure.methods'
 local Error = require 'luxure.error'.Error
 local cosock = require "cosock"
@@ -128,7 +129,7 @@ function Server:use(middleware)
         local success, err = Error.pcall(middleware, req, res, next)
         if not success then
             req.err = req.err or err
-            res:status(err.status)
+            res:set_status(err.status)
         end
     end
     return self
@@ -175,27 +176,30 @@ local function error_request(env, err, res)
         res:send(err.msg or '')
         return
     end
-    res:content_type('text/html'):send(debug_error_body(err))
+    res:set_content_type('text/html'):send(debug_error_body(err))
     return
 end
 
 function Server:_tick(incoming)
-    local req, req_err = Request.new(incoming)
+    local req, req_err = Request.tcp_source(
+        incoming
+    )
     if req_err then
+        incoming:close()
         return nil, req_err
     end
-    local res = Response.new(incoming)
+    local res = Response.new(200, incoming)
     self:route(req, res)
     local has_sent = res:has_sent()
     if req.err then
         error_request(self.env, req.err, res)
     elseif not req.handled then
         if not has_sent then
-            res:status(404):send('')
+            res:set_status(404):send('')
         end
     end
-    if res.should_close then
-        res:close()
+    if not res.hold_open then
+        incoming:close()
     end
     return 1
 end

@@ -1,5 +1,6 @@
 local cosock = require 'cosock'
 local Error = require 'luxure.error'.Error
+local lunch_utils = require 'luncheon.utils'
 
 ---@class Sse @
 ---
@@ -94,6 +95,34 @@ function Event:to_string()
     return table.concat(ret, '\n')
 end
 
+local function tick(rx, res, timeout)
+    local succ, ready, err
+    local readt = {rx, res.socket}
+    ready, _, err = cosock.socket.select(readt, nil, timeout)
+    if err then
+        if err == 'timeout' then
+            local event = Event.new():comment('')
+            succ, err = Error.pcall(lunch_utils.send_all, res.socket, event:to_string())
+            if not succ then
+                return nil, err
+            end
+        else
+            -- client disconnect or other IO error, exits loop and close socket
+            return nil, 'disconnect'
+        end
+    elseif (ready or {})[1] == res.socket then
+        res.socket:receive()
+        return nil, 'recv' --received from socket
+    else
+        local event = rx:receive()
+        succ, err = Error.pcall(lunch_utils.send_all, res.socket, event:to_string())
+        if not succ then
+            return nil, err
+        end
+    end
+    return 1
+end
+
 ---Wrap a Response in a new server sent event handle. This will spawn
 ---a cosock task that will manage the keepalive messages along with any
 ---the sending of any intentional events or data
@@ -107,11 +136,14 @@ end
 ---@param keepalive boolean|integer if a number the maximum number of seconds to wait between events to send an empty comment
 ---@return Sse @A handle to the server sent event task
 function Sse.new(res, keepalive)
-    res.headers.content_type = 'text/event-stream'
-    res.headers.cache_control = 'no-cache'
-    res.headers.content_length = nil
-    res.should_close = false;
-    res:_send_chunk()
+    res:add_header('Content-Type', 'text/event-stream')
+    res:add_header('Cache-Control', 'no-cache')
+    res.headers._inner.content_length = nil
+    res.hold_open = true;
+    Error.assert(res:send_preamble())
+    Error.assert(res:send_header())
+    Error.assert(res:send_header())
+    Error.assert(res:send_header())
     local tx, rx = cosock.channel.new()
     cosock.spawn(function ()
         local timeout = nil
@@ -120,32 +152,14 @@ function Sse.new(res, keepalive)
         elseif keepalive then
             timeout = 15
         end
-        local succ, ready, err
         while true do
-            local readt = {rx, res.outgoing}
-            ready, _, err = cosock.socket.select(readt, nil, timeout)
-            if err then
-                if err == 'timeout' then
-                    local ev = Event.new():comment('')
-                    succ, err = Error.pcall(res._send_all, res.outgoing, ev:to_string())
-                    if not succ then
-                        break
-                    end
-                else
-                    -- client disconnect or other IO error, exits loop and close socket
-                    break
-                end
-            elseif (ready or {})[1] == res.outgoing then
-                break --received from socket
-            else
-                local event = rx:receive()
-                succ, err = Error.pcall(res._send_all, res.outgoing, event:to_string())
-                if not succ then
-                    break
-                end
+            local succ, err = tick(rx, res, timeout)
+            if not succ then
+                print('error in sse tick', err)
+                break;
             end
         end
-        res:close()
+        res.socket:close()
         rx:close()
     end)
     return setmetatable({

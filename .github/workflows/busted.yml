@@ -32,6 +32,8 @@ jobs:
         run: luarocks install net-url
       - name: install logface
         run: luarocks install logface
+      - name: install luncheon
+        run: luarocks install luncheon
       - name: test
         run: |
           busted -c \

@@ -26,7 +26,7 @@ function Router:route(req, res)
             req.params = params
             local handled, err = Error.pcall(route.handle, route, req, res)
             if not handled and err then
-                res:status(err.status or 500)
+                res:set_status(err.status or 500)
             end
             req.err = err
             req.handled = handled
