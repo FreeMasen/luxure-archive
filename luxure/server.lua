@@ -21,7 +21,7 @@ Server.__index = Server
 
 ---Server Options
 ---@class Opts
----@field public env 'debug'|'production'
+---@field public env string 'debug'|'production'
 ---@field public backlog number
 ---@field public async boolean
 local Opts = {}
@@ -47,7 +47,7 @@ function Opts:set_backlog(backlog)
 end
 
 ---Set the env property
----@param env 'production'|'debug' The env string
+---@param env string 'production'|'debug' The env string
 ---@return Opts
 function Opts:set_env(env)
     self.env = env
@@ -132,6 +132,10 @@ function Server:use(middleware)
     end
 end
 
+---Route a request, first through any registered middleware
+---followed by any registered handler
+---@param req Request
+---@param res Response
 function Server:route(req, res)
     if self.middleware then
         self.middleware(req, res)
@@ -140,7 +144,7 @@ function Server:route(req, res)
     end
 end
 
---- generate html for error when in debug mode
+---generate html for error when in debug mode
 ---@param err Error
 local function debug_error_body(err)
     local code = err.status or '500'
@@ -189,6 +193,7 @@ function Server:_tick(incoming)
         end
     end
     if res.should_close then
+        print('closing socket')
         res:close()
     end
     return 1
@@ -197,27 +202,29 @@ end
 ---A single step in the Server run loop
 ---which will call `accept` on the underlying socket
 ---and when that returns a client socket, it will
---attempt to route the Request/Response objects through
---the registered middleware and routes
+---attempt to route the Request/Response objects through
+---the registered middleware and routes
 function Server:tick()
     local incoming = Error.assert(self.sock:accept())
     if self.async then
-        cosock.spawn(function() self:_tick(incoming) end, '')
+        cosock.spawn(
+            function() self:_tick(incoming) end,
+            string.format('Accepted request ptr: %s', incoming)
+        )
     else
         self:_tick(incoming)
     end
 end
+
 function Server:_run(err_callback)
-    cosock.spawn(function()
-        while true do
-            local success, msg = self:tick()
-            if not success then
-                if not err_callback(msg) then
-                    return
-                end
+    while true do
+        local success, msg = self:tick()
+        if not success then
+            if not err_callback(msg) then
+                return
             end
         end
-    end, 'luxure-main-loop')
+    end
     cosock.run()
 end
 ---Start this server, blocking forever
