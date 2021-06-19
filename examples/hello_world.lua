@@ -57,7 +57,7 @@ server:get('/fail', function()
     -- using Error.assert from luxure, you will automatically
     -- generate the correctly formatted error to automatically
     -- return 500 to the caller and set your message as the body.
-    -- if you were to set the environment variable `LUXURE_ENV`
+    -- if you were to set the options property `env` to
     -- to a value other than 'production' and it will also send
     -- the original file/line number and the backtrace from the error
     lux.Error.assert(false, 'I always fail')

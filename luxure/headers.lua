@@ -1,7 +1,8 @@
 local Error = require 'luxure.error'.Error
 ---@class Headers
+---
 ---A map of the key value pairs from the header portion
----of an HTTP request
+---of an HTTP request or response
 ---@field public accept string
 ---@field public accept_charset string
 ---@field public accept_encoding string

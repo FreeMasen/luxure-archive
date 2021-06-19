@@ -8,6 +8,9 @@ local cosock = require "cosock"
 ---@alias handler fun(req: Request, res: Response)
 
 ---@class Server
+---
+---The primary interface for working with this framework
+---it can be used to register middleware and route handlers
 ---@field private sock table socket being used by the server
 ---@field public router Router The router for incoming requests
 ---@field private middleware table List of middleware callbacks
@@ -19,13 +22,15 @@ local Server = {}
 
 Server.__index = Server
 
----Server Options
 ---@class Opts
----@field public env string 'debug'|'production'
----@field public backlog number
----@field public async boolean
+---
+---The options a server knows about
+---@field public env string 'debug'|'production' if debug, more information is provided on errors
+---@field public backlog number The number to pass to `socket:listen`
+---@field public async boolean If a new cosock task should be spawned for incoming requests
 local Opts = {}
 Opts.__index = Opts
+
 ---Create a new options object
 ---@param t table|nil If not the pre-set options
 ---@return Opts

@@ -1,5 +1,5 @@
-local log = require 'log'
 ---@class Error
+---
 ---Represents and error in the request/response cycle
 ---@field public msg string The original error message
 ---@field public msg_with_line string The original error message with the file/line number
@@ -18,7 +18,6 @@ local Error = {
 Error.__index = Error
 
 local function new_error(msg, msg_with_line, status, traceback)
-    log.error(msg_with_line)
     local ret = {
         msg = msg,
         msg_with_line = msg_with_line,

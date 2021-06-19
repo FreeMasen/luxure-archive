@@ -3,10 +3,12 @@ local statuses = require 'luxure.status'
 local Error = require 'luxure.error'.Error
 
 ---@class Response
+---
+---An outgoing HTTP response to send data on
 ---@field public headers Headers The HTTP headers for this response
 ---@field public body string the contents of the response body
 ---@field public outgoing table The socket this response will send on
----@field private should_close boolean
+---@field private should_close boolean If the request sholud be closed after routing
 local Response = {}
 Response.__index = Response
 
@@ -150,8 +152,8 @@ function Response:_send_chunk()
     self.body = ''
 end
 
----complete this http request by sending this response as text
----@param s string|nil
+---Complete this http request by sending this response as text
+---@param s string|nil The last chunk of text to be appended before sending
 function Response:send(s)
     if type(s) == 'string' then
         self:append_body(s)
@@ -199,6 +201,7 @@ function Response:has_sent()
     return self._has_sent
 end
 
+---Close the underlying socket
 function Response:close()
     self.outgoing:close()
 end

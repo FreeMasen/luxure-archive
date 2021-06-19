@@ -1,6 +1,9 @@
 local Route = require 'luxure.route'.Route
 local Error = require 'luxure.error'.Error
 ---@class Router
+---
+---The decision maker that pairs in incoming request with a registered
+---handler
 ---@field public routes table List of Routes registered
 local Router = {}
 
