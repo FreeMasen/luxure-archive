@@ -118,18 +118,6 @@ function Response:_generate_prebody()
         .. self.headers:serialize() .. '\r\n'
 end
 
-function Response:sse(headers, keepalive)
-    local Sse = require 'luxure.sse'.Sse;
-    for key, value in pairs(headers or {}) do
-        self.headers:append(key, value)
-    end
-    self.headers.content_type = 'text/event-stream'
-    self.headers.cache_control = 'no-cache'
-    self.headers.content_length = nil
-    self:_send_chunk()
-    return Sse.new(self, keepalive)
-end
-
 ---Append text to the body
 ---@param s string the text to append
 ---@return Response

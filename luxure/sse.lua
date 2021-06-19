@@ -70,10 +70,19 @@ function Event:to_string()
 end
 
 ---Create a new server sent event response
+---
+---Note: This requires that the server is configured with the `async` property
+---set to `true`
 ---@param res Response
----@param keepalive boolean
----@return Sse
+---@param keepalive boolean|integer if true, set to 15 seconds, if a number
+---the maximum number of seconds to wait between events to send an empty comment to keep
+---the client connected
+---@return Sse @A handle to the server sent event task
 function Sse.new(res, keepalive)
+    res.headers.content_type = 'text/event-stream'
+    res.headers.cache_control = 'no-cache'
+    res.headers.content_length = nil
+    res:_send_chunk()
     local tx, rx = cosock.channel.new()
     cosock.spawn(function ()
         local timeout = nil
@@ -84,10 +93,11 @@ function Sse.new(res, keepalive)
         end
         while true do
             local succ, err
-            local _, _, err = cosock.socket.select({rx}, {}, timeout)
+            _, _, err = cosock.socket.select({rx}, {}, timeout)
             if err then
                 if err == 'timeout' then
-                    succ, err = Error.pcall(res._send_all, res.outgoing, Event.new():comment(''):to_string())
+                    local ev = Event.new():comment('')
+                    succ, err = Error.pcall(res._send_all, res.outgoing, ev:to_string())
                     if not succ then
                         break
                     end
@@ -97,6 +107,7 @@ function Sse.new(res, keepalive)
                 end
             else
                 local event = rx:receive()
+                print(event:to_string())
                 succ, err = Error.pcall(res._send_all, res.outgoing, event:to_string())
                 if not succ then
                     break;
