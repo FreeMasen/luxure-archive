@@ -6,7 +6,6 @@ local cosock = require "cosock"
 local server = lux.Server.new(
     lux.Opts.new()
         :set_env('debug') -- debug html on 500s
-        :set_spawn_requests(true) -- spawn coroutines for incoming requests
 )
 
 -- use some middleware for parsing json bodies
@@ -57,7 +56,7 @@ server:get('/fail', function()
     -- using Error.assert from luxure, you will automatically
     -- generate the correctly formatted error to automatically
     -- return 500 to the caller and set your message as the body.
-    -- if you were to set the options property `env` to
+    -- if you were to set the environment variable `LUXURE_ENV`
     -- to a value other than 'production' and it will also send
     -- the original file/line number and the backtrace from the error
     lux.Error.assert(false, 'I always fail')
@@ -106,24 +105,29 @@ server:get('/dynamic', function(req, res)
     function li(text) {
         let ele = document.createElement('li');
         let node = document.createTextNode(text);
-        ele.appendChild(node)
-        return ele
+        ele.appendChild(node);
+        return ele;
     }
     s.onmessage = function(ev) {
-        let text = `${new Date()} ${ev.data}`
-        let node = li(text)
-        ul.appendChild(node)
+        let text = `${new Date()} ${ev.data}`;
+        let node = li(text);
+        ul.appendChild(node);
     }
     s.onerror = function(ev) {
-        let text = `${new Date()} Error in event stream`
-        let node = li(text)
-        ul.appendChild(node)
+        console.error(ev);
+        console.error(ev.message);
+        let text = `${new Date()} Error in event stream`;
+        let node = li(text);
+        ul.appendChild(node);
     }
     s.addEventListener('clear', function(ev) {
         while (ul.hasChildNodes()) {
             ul.removeChild(ul.firstChild);
         }
     });
+    setTimeout(function() {
+        s.close()
+    }, 1000 * 60)
     
 })()
 </script>
@@ -135,17 +139,22 @@ end)
 server:get('/sse', function(req, res)
     print('sse')
     local socket = cosock.socket;
-    local Event = require 'luxure.sse'.Event
-    local sse = res:sse({}, true)
-    -- 16 because our keepalive will be 15
-    local wait = 16
+    local sse = require 'luxure.sse'
+    local stream = sse.Sse.new(res, 4)
+    local wait = 5
+    local err
     while true do
+        print('sending event with wait', wait)
         if wait == 0 then
-            sse:send(Event.new():event('clear'):data('clearing'))
+            _, err = stream:send(sse.Event.new():event('clear'):data('clearing'))
             wait = 5
         else
-            sse:send(Event.new():data(string.format('next tick in %s', wait)))
+            _, err = stream:send(sse.Event.new():data(string.format('next tick in %s', wait)))
             socket.sleep(wait)
+        end
+        if err then
+            print('error in sse, exiting', err)
+            break
         end
         if wait >= 1 then
             wait = wait - 1
@@ -153,8 +162,10 @@ server:get('/sse', function(req, res)
     end
 end)
 
+server.sock:setoption('reuseaddr', true)
 -- open the server's socket on port 8080
 server:listen(8080)
+server.sock:setoption('reuseaddr', true)
 print(string.format('listening on http://%s:%s', server.sock:getsockname()))
 -- Run the server forever, this will block the application
 -- from exiting.

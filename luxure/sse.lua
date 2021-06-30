@@ -104,12 +104,13 @@ end
 ---Note: This requires that the server is configured with the `async` property
 ---set to `true`
 ---@param res Response The response to wrap
----@param keepalive boolean|integer number the maximum number of seconds to wait between events to send an empty comment
+---@param keepalive boolean|integer if a number the maximum number of seconds to wait between events to send an empty comment
 ---@return Sse @A handle to the server sent event task
 function Sse.new(res, keepalive)
     res.headers.content_type = 'text/event-stream'
     res.headers.cache_control = 'no-cache'
     res.headers.content_length = nil
+    res.should_close = false;
     res:_send_chunk()
     local tx, rx = cosock.channel.new()
     cosock.spawn(function ()
@@ -119,9 +120,10 @@ function Sse.new(res, keepalive)
         elseif keepalive then
             timeout = 15
         end
+        local succ, ready, err
         while true do
-            local succ, err
-            _, _, err = cosock.socket.select({rx}, {}, timeout)
+            local readt = {rx, res.outgoing}
+            ready, _, err = cosock.socket.select(readt, nil, timeout)
             if err then
                 if err == 'timeout' then
                     local ev = Event.new():comment('')
@@ -133,18 +135,19 @@ function Sse.new(res, keepalive)
                     -- client disconnect or other IO error, exits loop and close socket
                     break
                 end
+            elseif (ready or {})[1] == res.outgoing then
+                break --received from socket
             else
                 local event = rx:receive()
-                print(event:to_string())
                 succ, err = Error.pcall(res._send_all, res.outgoing, event:to_string())
                 if not succ then
-                    break;
+                    break
                 end
             end
         end
         res:close()
+        rx:close()
     end)
-    res.should_close = false;
     return setmetatable({
         tx = tx,
     }, Sse)
@@ -152,8 +155,10 @@ end
 
 ---Send an event
 ---@param ev Event
+---@return integer|nil
+---@return string
 function Sse:send(ev)
-    self.tx:send(ev)
+    return self.tx:send(ev)
 end
 
 return {
