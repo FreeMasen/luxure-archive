@@ -7,7 +7,7 @@ describe('Server', function()
     it('Should handle requests', function()
         local s = assert(Server.new_with(mocks.MockTcp.new({
             {'GET / HTTP/1.1'}
-        })))
+        }), {sync = true}))
         s:listen(8080)
         local called = false
         s:get('/', function(req, res)
@@ -19,7 +19,7 @@ describe('Server', function()
     it('should call middleware and handle requests', function()
         local s = assert(Server.new_with(mocks.MockTcp.new({
             {'GET / HTTP/1.1'}
-        })))
+        }), {sync = true}))
         s:listen(8080)
         local called = false
         local called_middleware = false
@@ -37,7 +37,7 @@ describe('Server', function()
     it('should call a middleware chain and handle requests', function()
         local s = assert(Server.new_with(mocks.MockTcp.new({
             {'GET / HTTP/1.1'}
-        })))
+        }), {sync = true}))
         s:listen(8080)
         local called = false
         local middleware_call_count = 0
@@ -58,7 +58,7 @@ describe('Server', function()
         local sock = {'GET / HTTP/1.1'}
         local s = assert(Server.new_with(mocks.MockTcp.new({
             sock
-        })))
+        }), {sync = true}))
         s:listen(8080)
         local called = false
         s:use(function(req, res, next)
@@ -79,16 +79,16 @@ describe('Server', function()
         local sock = {'GET / HTTP/1.1'}
         local s = assert(Server.new_with(mocks.MockTcp.new({
             sock
-        })))
+        }), {sync = true}))
         s:listen(8080)
         s:tick()
-        assert(string.find(sock[1], '^HTTP/1.1 404 Not Found'), string.format('Expected 500 found %s',  utils.table_string(sock)))
+        assert(string.find(sock[1], '^HTTP/1.1 404 Not Found'), string.format('Expected 404 found %s',  utils.table_string(sock)))
     end)
     it('no endpoint found should return 404, with endpoints', function()
         local sock = {'GET /not-found HTTP/1.1'}
         local s = assert(Server.new_with(mocks.MockTcp.new({
             sock
-        })))
+        }), {sync = true}))
         s:get('/', function() end)
         s:get('/found', function() end)
         s:post('/found', function() end)

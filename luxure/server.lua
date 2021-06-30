@@ -27,7 +27,6 @@ Server.__index = Server
 ---The options a server knows about
 ---@field public env string 'debug'|'production' if debug, more information is provided on errors
 ---@field public backlog number The number to pass to `socket:listen`
----@field public async boolean If a new cosock task should be spawned for incoming requests
 local Opts = {}
 Opts.__index = Opts
 
@@ -39,7 +38,7 @@ function Opts.new(t)
     return setmetatable({
         backlog = t.backlog,
         env = t.env or 'production',
-        async = t.async,
+        sync = t.sync,
     }, Opts)
 end
 
@@ -56,14 +55,6 @@ end
 ---@return Opts
 function Opts:set_env(env)
     self.env = env
-    return self
-end
-
----Set the env property
----@param async boolean
----@return Opts
-function Opts:set_async(async)
-    self.async = async
     return self
 end
 
@@ -93,8 +84,7 @@ function Server.new_with(sock, opts)
         env = opts.env or 'production',
         ---@type number
         backlog = opts.backlog,
-        ---@type boolean
-        async = opts.async
+        _sync = opts.sync,
     }
     return setmetatable(base, Server)
 end
@@ -198,7 +188,6 @@ function Server:_tick(incoming)
         end
     end
     if res.should_close then
-        print('closing socket')
         res:close()
     end
     return 1
@@ -211,7 +200,7 @@ end
 ---the registered middleware and routes
 function Server:tick()
     local incoming = Error.assert(self.sock:accept())
-    if self.async then
+    if not self._sync then
         cosock.spawn(
             function() self:_tick(incoming) end,
             string.format('Accepted request ptr: %s', incoming)
@@ -230,13 +219,12 @@ function Server:_run(err_callback)
             end
         end
     end
-    cosock.run()
 end
 ---Start this server, blocking forever
 ---@param err_callback fun(msg:string):boolean Optional callback to be run if `tick` returns an error
 function Server:run(err_callback)
     err_callback = err_callback or function () return true end
-    if self.async then
+    if not self._sync then
         cosock.spawn(function()
             self:_run(err_callback)
         end, 'luxure-main-loop')
