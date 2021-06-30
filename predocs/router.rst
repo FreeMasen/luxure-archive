@@ -1,0 +1,5 @@
+===============
+Router
+===============
+
+.. lua:autoclass:: Router

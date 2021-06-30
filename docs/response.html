@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Response &mdash; Luxure</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+    <link rel="canonical" href="/luxure/response.html" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Router" href="router.html" />
+    <link rel="prev" title="Request" href="request.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="error.html">Error</a></li>
+<li class="toctree-l1"><a class="reference internal" href="headers.html">Headers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request.html">Request</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Response</a></li>
+<li class="toctree-l1"><a class="reference internal" href="router.html">Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sse.html">Sse</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Response</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/response.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="response">
+<h1>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h1>
+<dl class="lua class">
+<dt id="Response">
+<em class="property">class </em><code class="sig-name descname">Response</code><a class="headerlink" href="#Response" title="Permalink to this definition">¶</a></dt>
+<dd><p>An outgoing HTTP response to send data on</p>
+<dl class="lua attribute">
+<dt id="Response.headers">
+<code class="sig-name descname">headers</code><em class="property">: </em>Headers<a class="headerlink" href="#Response.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>The HTTP headers for this response</p>
+</dd></dl>
+
+<dl class="lua attribute">
+<dt id="Response.body">
+<code class="sig-name descname">body</code><em class="property">: </em>str<a class="headerlink" href="#Response.body" title="Permalink to this definition">¶</a></dt>
+<dd><p>the contents of the response body</p>
+</dd></dl>
+
+<dl class="lua attribute">
+<dt id="Response.outgoing">
+<code class="sig-name descname">outgoing</code><em class="property">: </em>table<a class="headerlink" href="#Response.outgoing" title="Permalink to this definition">¶</a></dt>
+<dd><p>The socket this response will send on</p>
+</dd></dl>
+
+<dl class="lua attribute">
+<dt id="Response.should_close">
+<code class="sig-name descname">should_close</code><em class="property">: </em>boolean<a class="headerlink" href="#Response.should_close" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the request sholud be closed after routing</p>
+</dd></dl>
+
+<dl class="lua staticmethod">
+<dt id="Response.new">
+<em class="property">static </em><code class="sig-name descname">new</code><span class="sig-paren">(</span><em class="sig-param">outgoing</em>, <em class="sig-param">send_buffer_size</em><span class="sig-paren">)</span><a class="headerlink" href="#Response.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a response for to a corresponding request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outgoing</strong> (<em>table</em>) – anything that can call <cite>:send()</cite></p></li>
+<li><p><strong>send_buffer_size</strong> (<em>number or nil</em>) – If provided, sending will happen in a buffered fashion</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#Response" title="Response">Response</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.status">
+<em class="property"> </em><code class="sig-name descname">status</code><span class="sig-paren">(</span><em class="sig-param">n</em><span class="sig-paren">)</span><a class="headerlink" href="#Response.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the status for this request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>number</em>) – the 3 digit status</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#Response" title="Response">Response</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.content_type">
+<em class="property"> </em><code class="sig-name descname">content_type</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#Response.content_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the content type of the outbound request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – the mime type for this request</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.content_length">
+<em class="property"> </em><code class="sig-name descname">content_length</code><span class="sig-paren">(</span><em class="sig-param">len</em><span class="sig-paren">)</span><a class="headerlink" href="#Response.content_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the Content-Length header for this response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>len</strong> (<em>number</em>) – The length of the content that will be sent</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#Response" title="Response">Response</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.set_send_buffer_size">
+<em class="property"> </em><code class="sig-name descname">set_send_buffer_size</code><span class="sig-paren">(</span><em class="sig-param">size</em><span class="sig-paren">)</span><a class="headerlink" href="#Response.set_send_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the send buffer size to enable buffered writes</p>
+<p>if unset, the full response body is buffered before sending</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>number or nil</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.append_body">
+<em class="property"> </em><code class="sig-name descname">append_body</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#Response.append_body" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append text to the body</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – the text to append</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#Response" title="Response">Response</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response._send_chunk">
+<em class="property"> </em><code class="sig-name descname">_send_chunk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Response._send_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a chunk when sending in buffered mode</p>
+<p>this will truncate self.body to an empty string</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.send">
+<em class="property"> </em><code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#Response.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete this http request by sending this response as text</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str or nil</em>) – The last chunk of text to be appended before sending</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.sink">
+<em class="property"> </em><code class="sig-name descname">sink</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Response.sink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a ltn12 sink for sending on this Response</p>
+<p>If using this interface, it is a very good idea to already
+know the size of your response body and set that prior
+to passing this sink to a pump. If the Content-Length header
+is unset when this starts, there will be no way to back fill
+that value.</p>
+<p>For buffered writes, be sure to call :set_send_buffer_size</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(chunk:string|nil, err: string|nil): number|nil</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.has_sent">
+<em class="property"> </em><code class="sig-name descname">has_sent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Response.has_sent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this response has sent any bytes</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Response.close">
+<em class="property"> </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Response.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the underlying socket</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="router.html" class="btn btn-neutral float-right" title="Router" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="request.html" class="btn btn-neutral float-left" title="Request" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
