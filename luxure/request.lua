@@ -3,6 +3,8 @@ local Headers = require 'luxure.headers'.Headers
 local Error = require 'luxure.error'.Error
 
 ---@class Request
+---
+---An incoming HTTP request to receive data on.
 ---@field public method string the HTTP method for this request
 ---@field public url table The parse url of this request
 ---@field public http_version string The http version from the request preamble
@@ -85,7 +87,8 @@ end
 ---Get the contents of this request's body
 ---if not yet received, this will read the body
 ---from the socket
----@return string|nil, string|nil
+---@return string|nil
+---@return string|nil
 function Request:get_body()
     if not self._received_body then
         local err = self:_fill_body()
@@ -110,7 +113,8 @@ end
 
 ---Get the value from the Content-Length header that should be present
 ---for all http requests
----@return number|nil, string|nil
+---@return number|nil
+---@return string|nil
 function Request:content_length()
     local headers, err = self:get_headers()
     if err then
@@ -124,7 +128,8 @@ end
 
 ---Construct a new Request
 ---@param socket table The tcp client socket for this request
----@return Request|nil, string|nil
+---@return Request|nil
+---@return string|nil
 function Request.new(socket)
     Error.assert(socket, 'cannot create request with nil socket')
     local r = {

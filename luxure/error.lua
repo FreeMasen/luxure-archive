@@ -1,4 +1,5 @@
 ---@class Error
+---
 ---Represents and error in the request/response cycle
 ---@field public msg string The original error message
 ---@field public msg_with_line string The original error message with the file/line number
@@ -36,6 +37,7 @@ local function build_error_string(msg, status)
     end
     return string.format('%s|%i', msg, status or 500)
 end
+
 ---Wrapper around assert that coverts the
 ---message into an pipe sepereted list
 ---this format will be used by Error.pcall to reconstruct

@@ -20,13 +20,21 @@ jobs:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         uses: xpol/setup-lua@v0.2
       - uses: leafo/gh-actions-luarocks@v4
+      - name: install busted
+        run: luarocks install busted
+      - name: install luacov
+        run: luarocks install luacov
+      - name: install cosock
+        run: luarocks install cosock
+      - name: install luasec
+        run: luarocks install luasec
+      - name: install net-url
+        run: luarocks install net-url
+      - name: install logface
+        run: luarocks install logface
       - name: test
         run: |
-          luarocks install busted \
-          && luarocks install net-url \
-          && luarocks install luasocket \
-          && luarocks install luacov \
-          && busted -c \
+          busted -c \
           && bash <(curl -s https://codecov.io/bash)
         env: 
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -3,23 +3,32 @@ local Request = require 'luxure.request'.Request
 local Response = require 'luxure.response'.Response
 local methods = require 'luxure.methods'
 local Error = require 'luxure.error'.Error
+local cosock = require "cosock"
+
+---@alias handler fun(req: Request, res: Response)
 
 ---@class Server
+---
+---The primary interface for working with this framework
+---it can be used to register middleware and route handlers
 ---@field private sock table socket being used by the server
 ---@field public router Router The router for incoming requests
 ---@field private middleware table List of middleware callbacks
 ---@field public ip string defaults to '0.0.0.0'
 ---@field private env string defaults to 'production'
 ---@field private backlog number|nil defaults to nil
+---@field private async boolean If the server should spawn a cosock runtime and task for each incoming request
 local Server = {}
 
 Server.__index = Server
 
----Server Options
 ---@class Opts
----@field public env 'debug'|'production'
----@field public backlog number
+---
+---The options a server knows about
+---@field public env string 'debug'|'production' if debug, more information is provided on errors
+---@field public backlog number The number to pass to `socket:listen`
 local Opts = {}
+Opts.__index = Opts
 
 ---Create a new options object
 ---@param t table|nil If not the pre-set options
@@ -29,6 +38,7 @@ function Opts.new(t)
     return setmetatable({
         backlog = t.backlog,
         env = t.env or 'production',
+        sync = t.sync,
     }, Opts)
 end
 
@@ -39,8 +49,9 @@ function Opts:set_backlog(backlog)
     self.backlog = backlog
     return self
 end
+
 ---Set the env property
----@param env 'production'|'debug' The env string
+---@param env string 'production'|'debug' The env string
 ---@return Opts
 function Opts:set_env(env)
     self.env = env
@@ -51,8 +62,7 @@ end
 ---implementation
 ---@param opts Opts The configuration of this Server
 function Server.new(opts)
-    local s = require 'socket'
-    local sock = s.tcp()
+    local sock = cosock.socket.tcp()
     return Server.new_with(sock, opts)
 end
 
@@ -61,7 +71,7 @@ end
 ---@param sock table This should have an api similar to luasocket's socket type
 ---@param opts Opts The configuration of this Server
 function Server.new_with(sock, opts)
-    opts = opts or {}
+    opts = opts or Opts.new()
     local base = {
         sock = sock,
         ---@type Router
@@ -74,9 +84,9 @@ function Server.new_with(sock, opts)
         env = opts.env or 'production',
         ---@type number
         backlog = opts.backlog,
+        _sync = opts.sync,
     }
-    setmetatable(base, Server)
-    return base
+    return setmetatable(base, Server)
 end
 
 ---Override the default IP address
@@ -84,6 +94,7 @@ end
 function Server:set_ip(ip)
     self.ip = ip
 end
+
 ---Attempt to open a socket
 ---@param port number|nil If provided, the port this server will attempt to bind on
 function Server:listen(port)
@@ -116,6 +127,10 @@ function Server:use(middleware)
     end
 end
 
+---Route a request, first through any registered middleware
+---followed by any registered handler
+---@param req Request
+---@param res Response
 function Server:route(req, res)
     if self.middleware then
         self.middleware(req, res)
@@ -124,7 +139,7 @@ function Server:route(req, res)
     end
 end
 
---- generate html for error when in debug mode
+---generate html for error when in debug mode
 ---@param err Error
 local function debug_error_body(err)
     local code = err.status or '500'
@@ -157,13 +172,7 @@ local function error_request(env, err, res)
     return
 end
 
----A single step in the Server run loop
----which will call `accept` on the underlying socket
----and when that returns a client socket, it will
---attempt to route the Request/Response objects through
---the registered middleware and reoutes
-function Server:tick()
-    local incoming = Error.assert(self.sock:accept())
+function Server:_tick(incoming)
     local req, req_err = Request.new(incoming)
     if req_err then
         return nil, req_err
@@ -178,14 +187,30 @@ function Server:tick()
             res:status(404):send('')
         end
     end
-    incoming:close()
+    if res.should_close then
+        res:close()
+    end
     return 1
 end
 
----Start this server, blocking forever
----@param err_callback fun(msg:string):boolean Optional callback to be run if `tick` returns an error
-function Server:run(err_callback)
-    err_callback = err_callback or function () return true end
+---A single step in the Server run loop
+---which will call `accept` on the underlying socket
+---and when that returns a client socket, it will
+---attempt to route the Request/Response objects through
+---the registered middleware and routes
+function Server:tick()
+    local incoming = Error.assert(self.sock:accept())
+    if not self._sync then
+        cosock.spawn(
+            function() self:_tick(incoming) end,
+            string.format('Accepted request ptr: %s', incoming)
+        )
+    else
+        self:_tick(incoming)
+    end
+end
+
+function Server:_run(err_callback)
     while true do
         local success, msg = self:tick()
         if not success then
@@ -195,6 +220,20 @@ function Server:run(err_callback)
         end
     end
 end
+---Start this server, blocking forever
+---@param err_callback fun(msg:string):boolean Optional callback to be run if `tick` returns an error
+function Server:run(err_callback)
+    err_callback = err_callback or function () return true end
+    if not self._sync then
+        cosock.spawn(function()
+            self:_run(err_callback)
+        end, 'luxure-main-loop')
+        cosock.run()
+    else
+        self:_run(err_callback)
+    end
+end
+
 ---Add a ACL endpoint
 ---@param route string
 ---@param handler fun(req:Request, res:Response)
