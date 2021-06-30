@@ -1,0 +1,564 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Headers &mdash; Luxure</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+    <link rel="canonical" href="/luxure/headers.html" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Request" href="request.html" />
+    <link rel="prev" title="Error" href="error.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="error.html">Error</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Headers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request.html">Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="response.html">Response</a></li>
+<li class="toctree-l1"><a class="reference internal" href="router.html">Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sse.html">Sse</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Headers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/headers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="headers">
+<h1>Headers<a class="headerlink" href="#headers" title="Permalink to this headline">¶</a></h1>
+<dl class="lua class">
+<dt id="Headers">
+<em class="property">class </em><code class="sig-name descname">Headers</code><a class="headerlink" href="#Headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>A map of the key value pairs from the header portion
+of an HTTP request or response</p>
+<dl class="lua attribute">
+<dt id="Headers.accept">
+<code class="sig-name descname">accept</code><em class="property">: </em>str<a class="headerlink" href="#Headers.accept" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.accept_charset">
+<code class="sig-name descname">accept_charset</code><em class="property">: </em>str<a class="headerlink" href="#Headers.accept_charset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.accept_encoding">
+<code class="sig-name descname">accept_encoding</code><em class="property">: </em>str<a class="headerlink" href="#Headers.accept_encoding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.accept_language">
+<code class="sig-name descname">accept_language</code><em class="property">: </em>str<a class="headerlink" href="#Headers.accept_language" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.accept_ranges">
+<code class="sig-name descname">accept_ranges</code><em class="property">: </em>str<a class="headerlink" href="#Headers.accept_ranges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.age">
+<code class="sig-name descname">age</code><em class="property">: </em>str<a class="headerlink" href="#Headers.age" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.allow">
+<code class="sig-name descname">allow</code><em class="property">: </em>str<a class="headerlink" href="#Headers.allow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.authorization">
+<code class="sig-name descname">authorization</code><em class="property">: </em>str<a class="headerlink" href="#Headers.authorization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.cache_control">
+<code class="sig-name descname">cache_control</code><em class="property">: </em>str<a class="headerlink" href="#Headers.cache_control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.connection">
+<code class="sig-name descname">connection</code><em class="property">: </em>str<a class="headerlink" href="#Headers.connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.content_encoding">
+<code class="sig-name descname">content_encoding</code><em class="property">: </em>str<a class="headerlink" href="#Headers.content_encoding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.content_language">
+<code class="sig-name descname">content_language</code><em class="property">: </em>str<a class="headerlink" href="#Headers.content_language" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.content_length">
+<code class="sig-name descname">content_length</code><em class="property">: </em>str<a class="headerlink" href="#Headers.content_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.content_location">
+<code class="sig-name descname">content_location</code><em class="property">: </em>str<a class="headerlink" href="#Headers.content_location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.content_md5">
+<code class="sig-name descname">content_md5</code><em class="property">: </em>str<a class="headerlink" href="#Headers.content_md5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.content_range">
+<code class="sig-name descname">content_range</code><em class="property">: </em>str<a class="headerlink" href="#Headers.content_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.content_type">
+<code class="sig-name descname">content_type</code><em class="property">: </em>str<a class="headerlink" href="#Headers.content_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.date">
+<code class="sig-name descname">date</code><em class="property">: </em>str<a class="headerlink" href="#Headers.date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.etag">
+<code class="sig-name descname">etag</code><em class="property">: </em>str<a class="headerlink" href="#Headers.etag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.expect">
+<code class="sig-name descname">expect</code><em class="property">: </em>str<a class="headerlink" href="#Headers.expect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.expires">
+<code class="sig-name descname">expires</code><em class="property">: </em>str<a class="headerlink" href="#Headers.expires" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.from">
+<code class="sig-name descname">from</code><em class="property">: </em>str<a class="headerlink" href="#Headers.from" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.host">
+<code class="sig-name descname">host</code><em class="property">: </em>str<a class="headerlink" href="#Headers.host" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.if_match">
+<code class="sig-name descname">if_match</code><em class="property">: </em>str<a class="headerlink" href="#Headers.if_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.if_modified_since">
+<code class="sig-name descname">if_modified_since</code><em class="property">: </em>str<a class="headerlink" href="#Headers.if_modified_since" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.if_none_match">
+<code class="sig-name descname">if_none_match</code><em class="property">: </em>str<a class="headerlink" href="#Headers.if_none_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.if_range">
+<code class="sig-name descname">if_range</code><em class="property">: </em>str<a class="headerlink" href="#Headers.if_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.if_unmodified_since">
+<code class="sig-name descname">if_unmodified_since</code><em class="property">: </em>str<a class="headerlink" href="#Headers.if_unmodified_since" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.last_modified">
+<code class="sig-name descname">last_modified</code><em class="property">: </em>str<a class="headerlink" href="#Headers.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.location">
+<code class="sig-name descname">location</code><em class="property">: </em>str<a class="headerlink" href="#Headers.location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.max_forwards">
+<code class="sig-name descname">max_forwards</code><em class="property">: </em>str<a class="headerlink" href="#Headers.max_forwards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.pragma">
+<code class="sig-name descname">pragma</code><em class="property">: </em>str<a class="headerlink" href="#Headers.pragma" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.proxy_authenticate">
+<code class="sig-name descname">proxy_authenticate</code><em class="property">: </em>str<a class="headerlink" href="#Headers.proxy_authenticate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.proxy_authorization">
+<code class="sig-name descname">proxy_authorization</code><em class="property">: </em>str<a class="headerlink" href="#Headers.proxy_authorization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.range">
+<code class="sig-name descname">range</code><em class="property">: </em>str<a class="headerlink" href="#Headers.range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.referer">
+<code class="sig-name descname">referer</code><em class="property">: </em>str<a class="headerlink" href="#Headers.referer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.retry_after">
+<code class="sig-name descname">retry_after</code><em class="property">: </em>str<a class="headerlink" href="#Headers.retry_after" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.server">
+<code class="sig-name descname">server</code><em class="property">: </em>str<a class="headerlink" href="#Headers.server" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.te">
+<code class="sig-name descname">te</code><em class="property">: </em>str<a class="headerlink" href="#Headers.te" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.trailer">
+<code class="sig-name descname">trailer</code><em class="property">: </em>str<a class="headerlink" href="#Headers.trailer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.upgrade">
+<code class="sig-name descname">upgrade</code><em class="property">: </em>str<a class="headerlink" href="#Headers.upgrade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.user_agent">
+<code class="sig-name descname">user_agent</code><em class="property">: </em>str<a class="headerlink" href="#Headers.user_agent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.vary">
+<code class="sig-name descname">vary</code><em class="property">: </em>str<a class="headerlink" href="#Headers.vary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.via">
+<code class="sig-name descname">via</code><em class="property">: </em>str<a class="headerlink" href="#Headers.via" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.warning">
+<code class="sig-name descname">warning</code><em class="property">: </em>str<a class="headerlink" href="#Headers.warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua attribute">
+<dt id="Headers.www_authenticate">
+<code class="sig-name descname">www_authenticate</code><em class="property">: </em>str<a class="headerlink" href="#Headers.www_authenticate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt id="Headers.serialize">
+<em class="property"> </em><code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Headers.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialize the whole set of headers seperating them with a ‘rn’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Headers.append_chunk">
+<em class="property"> </em><code class="sig-name descname">append_chunk</code><span class="sig-paren">(</span><em class="sig-param">text</em><span class="sig-paren">)</span><a class="headerlink" href="#Headers.append_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a chunk of headers to this map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua staticmethod">
+<dt id="Headers.from_chunk">
+<em class="property">static </em><code class="sig-name descname">from_chunk</code><span class="sig-paren">(</span><em class="sig-param">text</em><span class="sig-paren">)</span><a class="headerlink" href="#Headers.from_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for a Headers instance with the provided text</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#Headers" title="Headers">Headers</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua staticmethod">
+<dt id="Headers.new">
+<em class="property">static </em><code class="sig-name descname">new</code><span class="sig-paren">(</span><em class="sig-param">base</em><span class="sig-paren">)</span><a class="headerlink" href="#Headers.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bare constructor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>base</strong> (<em>table or nil</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua staticmethod">
+<dt id="Headers.normalize_key">
+<em class="property">static </em><code class="sig-name descname">normalize_key</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="headerlink" href="#Headers.normalize_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a standard header key to the normalized</p>
+<p>lua identifer used by this collection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Headers.append">
+<em class="property"> </em><code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#Headers.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a single key value pair to the collection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>any</em>) – </p></li>
+<li><p><strong>value</strong> (<em>any</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Headers.get_one">
+<em class="property"> </em><code class="sig-name descname">get_one</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="headerlink" href="#Headers.get_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a header from the map of headers</p>
+<p>This will first normalize the provided key. For example
+‘Content-Type’ will be normalized to <cite>content_type</cite>.
+If more than one value is provided for that header, the
+last value will be provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt id="Headers.get_all">
+<em class="property"> </em><code class="sig-name descname">get_all</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="headerlink" href="#Headers.get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a header from the map of headers</p>
+<p>This will first normalize the provided key. For example
+‘Content-Type’ will be normalized to <cite>content_type</cite>.
+If more than one value is provided for that header</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="request.html" class="btn btn-neutral float-right" title="Request" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="error.html" class="btn btn-neutral float-left" title="Error" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

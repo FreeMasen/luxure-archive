@@ -1,0 +1,327 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Luxure &mdash; Luxure</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+    <link rel="canonical" href="/luxure/index.html" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Error" href="error.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="error.html">Error</a></li>
+<li class="toctree-l1"><a class="reference internal" href="headers.html">Headers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="request.html">Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="response.html">Response</a></li>
+<li class="toctree-l1"><a class="reference internal" href="router.html">Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sse.html">Sse</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Luxure</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="luxure">
+<h1>Luxure<a class="headerlink" href="#luxure" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="https://img.shields.io/codecov/c/github/freemasen/luxure"><img alt="Codecov" src="https://img.shields.io/codecov/c/github/freemasen/luxure" /></a>
+<a class="reference external image-reference" href="https://img.shields.io/github/workflow/status/freemasen/luxure/CI"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/freemasen/luxure/CI" /></a>
+<a class="reference external image-reference" href="https://img.shields.io/luarocks/v/FreeMasen/luxure"><img alt="LuaRocks" src="https://img.shields.io/luarocks/v/FreeMasen/luxure" /></a>
+<a class="reference external image-reference" href="./luxure.svg"><img alt="Luxure Logo" src="./luxure.svg" /></a>
+<p>An HTTP Server framework for Lua</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="kd">local</span> <span class="n">dkjson</span> <span class="o">=</span> <span class="nb">require</span> <span class="s1">&#39;dkjson&#39;</span>
+<span class="kd">local</span> <span class="n">lux</span> <span class="o">=</span> <span class="nb">require</span> <span class="s1">&#39;luxure&#39;</span>
+
+<span class="c1">-- Create a server with the options</span>
+<span class="kd">local</span> <span class="n">server</span> <span class="o">=</span> <span class="n">lux</span><span class="p">.</span><span class="n">Server</span><span class="p">.</span><span class="n">new</span><span class="p">(</span><span class="n">lux</span><span class="p">.</span><span class="n">Opts</span><span class="p">.</span><span class="n">new</span><span class="p">({</span><span class="n">env</span> <span class="o">=</span> <span class="s1">&#39;debug&#39;</span><span class="p">}))</span>
+
+<span class="c1">-- use some middleware for parsing json bodies</span>
+<span class="n">server</span><span class="p">:</span><span class="n">use</span><span class="p">(</span><span class="kr">function</span> <span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="nb">next</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">h</span> <span class="o">=</span> <span class="n">req</span><span class="p">:</span><span class="n">get_headers</span><span class="p">()</span>
+    <span class="kr">if</span> <span class="n">req</span><span class="p">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span> <span class="ow">and</span> <span class="n">h</span><span class="p">.</span><span class="n">content_type</span> <span class="o">==</span> <span class="s1">&#39;application/json&#39;</span> <span class="kr">then</span>
+        <span class="n">req</span><span class="p">.</span><span class="n">raw_body</span> <span class="o">=</span> <span class="n">req</span><span class="p">:</span><span class="n">get_body</span><span class="p">()</span>
+        <span class="nb">assert</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="n">raw_body</span><span class="p">)</span>
+        <span class="kd">local</span> <span class="n">success</span><span class="p">,</span> <span class="n">body</span> <span class="o">=</span> <span class="nb">pcall</span><span class="p">(</span><span class="n">dkjson</span><span class="p">.</span><span class="n">decode</span><span class="p">,</span> <span class="n">req</span><span class="p">.</span><span class="n">raw_body</span><span class="p">)</span>
+        <span class="kr">if</span> <span class="n">success</span> <span class="kr">then</span>
+            <span class="n">req</span><span class="p">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">body</span>
+        <span class="kr">else</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to parse json&#39;</span><span class="p">)</span>
+        <span class="kr">end</span>
+    <span class="kr">end</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="c1">-- Use a middleware that will emulate nginx logging</span>
+<span class="n">server</span><span class="p">:</span><span class="n">use</span><span class="p">(</span><span class="kr">function</span> <span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="nb">next</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">start</span> <span class="o">=</span> <span class="nb">os.time</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">remote</span> <span class="o">=</span> <span class="n">req</span><span class="p">.</span><span class="n">socket</span><span class="p">:</span><span class="n">getpeername</span><span class="p">()</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">request</span> <span class="o">=</span> <span class="nb">string.format</span><span class="p">(</span><span class="s1">&#39;%s %s %s&#39;</span><span class="p">,</span> <span class="n">req</span><span class="p">.</span><span class="n">method</span><span class="p">,</span> <span class="n">req</span><span class="p">.</span><span class="n">url</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="n">req</span><span class="p">.</span><span class="n">http_version</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">_</span><span class="p">,</span> <span class="n">sent</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">req</span><span class="p">.</span><span class="n">socket</span><span class="p">:</span><span class="n">getstats</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="nb">string.format</span><span class="p">(</span><span class="s1">&#39;%s - %s - [%s] &quot;%s&quot; %i %i &quot;%s&quot; &quot;%s&quot;&#39;</span><span class="p">,</span>
+            <span class="n">remote</span><span class="p">,</span>
+            <span class="n">req</span><span class="p">.</span><span class="n">url</span><span class="p">.</span><span class="n">user</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="nb">os.date</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%dT%H:%M:%S%z&#39;</span><span class="p">,</span> <span class="n">start</span><span class="p">),</span>
+            <span class="n">request</span><span class="p">,</span>
+            <span class="n">res</span><span class="p">.</span><span class="n">_status</span><span class="p">,</span>
+            <span class="n">sent</span><span class="p">,</span>
+            <span class="n">req</span><span class="p">:</span><span class="n">get_headers</span><span class="p">().</span><span class="n">referrer</span> <span class="ow">or</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>
+            <span class="n">req</span><span class="p">:</span><span class="n">get_headers</span><span class="p">().</span><span class="n">user_agent</span> <span class="ow">or</span> <span class="s1">&#39;-&#39;</span>
+    <span class="p">))</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="c1">-- define a root GET endpoint</span>
+<span class="n">server</span><span class="p">:</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GET /&#39;</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">:</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;Hello world!&#39;</span><span class="p">)</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="c1">-- This endpoint will always return 500</span>
+<span class="n">server</span><span class="p">:</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/fail&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GET /fail&#39;</span><span class="p">)</span>
+    <span class="c1">-- using Error.assert from luxure, you will automatically</span>
+    <span class="c1">-- generate the correctly formatted error to automatically</span>
+    <span class="c1">-- return 500 to the caller and set your message as the body.</span>
+    <span class="c1">-- if you were to set the environment variable `LUXURE_ENV`</span>
+    <span class="c1">-- to a value other than &#39;production&#39; and it will also send</span>
+    <span class="c1">-- the origial file/line number and the backtrace from the error</span>
+    <span class="n">lux</span><span class="p">.</span><span class="n">Error</span><span class="p">.</span><span class="nb">assert</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="s1">&#39;I always fail&#39;</span><span class="p">)</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="c1">-- define a parameterized GET endpoint, here :name will</span>
+<span class="c1">-- be matched on any request /hello/(.+) and whatever</span>
+<span class="c1">-- value is after /hello/ will populate `req.params.name`</span>
+<span class="n">server</span><span class="p">:</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/hello/:name&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GET /hello/:name&#39;</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">:</span><span class="n">send</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s1">&#39;Hello %s&#39;</span><span class="p">,</span> <span class="n">req</span><span class="p">.</span><span class="n">params</span><span class="p">.</span><span class="n">name</span><span class="p">))</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="c1">-- define a POST endpoint expecting a json body</span>
+<span class="n">server</span><span class="p">:</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;POST /hello&#39;</span><span class="p">)</span>
+    <span class="c1">-- You can also pass an optional status code to this custom assert</span>
+    <span class="c1">-- that will automatically set the reply status to that</span>
+    <span class="n">lux</span><span class="p">.</span><span class="n">Error</span><span class="p">.</span><span class="nb">assert</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="n">body</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;name is a required variable&#39;</span><span class="p">,</span> <span class="mi">417</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">content</span> <span class="o">=</span> <span class="nb">string.format</span><span class="p">(</span><span class="s1">&#39;Hello %s&#39;</span><span class="p">,</span> <span class="n">req</span><span class="p">.</span><span class="n">body</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">:</span><span class="n">send</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="c1">-- define a GET endpoint, expecting query params</span>
+<span class="n">server</span><span class="p">:</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">req</span><span class="p">.</span><span class="n">url</span><span class="p">.</span><span class="n">query</span><span class="p">.</span><span class="n">name</span> <span class="o">==</span> <span class="kc">nil</span> <span class="kr">then</span>
+        <span class="n">res</span><span class="p">:</span><span class="n">status</span><span class="p">(</span><span class="mi">404</span><span class="p">):</span><span class="n">sent</span><span class="p">()</span>
+        <span class="kr">return</span>
+    <span class="kr">end</span>
+    <span class="n">res</span><span class="p">:</span><span class="n">send</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s1">&#39;Hello %s!&#39;</span><span class="p">,</span> <span class="n">req</span><span class="p">.</span><span class="n">url</span><span class="p">.</span><span class="n">query</span><span class="p">.</span><span class="n">name</span><span class="p">))</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="c1">-- open the server&#39;s socket on port 8080</span>
+<span class="n">server</span><span class="p">:</span><span class="n">listen</span><span class="p">(</span><span class="mi">8080</span><span class="p">)</span>
+
+<span class="c1">-- Run the server forever, this will block the application</span>
+<span class="c1">-- from exiting.</span>
+<span class="n">server</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>There is still lots of work to do, feel free to open a pull request with any contribution you’d like to make
+or Issue with a bug you have identified.</p>
+<p>If you’d like to take on an Issue, please make a comment on that issue to avoid duplicated work.</p>
+<p>As always with free software people are working on in their free time, please be understanding
+if things take a while to get a response.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="error.html" class="btn btn-neutral float-right" title="Error" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
