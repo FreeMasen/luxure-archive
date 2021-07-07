@@ -217,7 +217,7 @@ function Server:tick()
             string.format('Accepted request ptr: %s', incoming)
         )
     else
-        self:_tick(incoming)
+        return self:_tick(incoming)
     end
 end
 
