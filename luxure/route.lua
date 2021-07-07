@@ -73,6 +73,4 @@ function Route:handle(req, res)
     self.methods[req.method](req, res)
 end
 
-return {
-    Route = Route,
-}
+return Route

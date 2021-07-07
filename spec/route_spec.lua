@@ -1,4 +1,4 @@
-local Route = require 'luxure.route'.Route
+local Route = require 'luxure.route'
 local utils = require 'luxure.utils'
 local net_url = require 'net.url'
 

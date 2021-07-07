@@ -1,4 +1,4 @@
-local Route = require 'luxure.route'.Route
+local Route = require 'luxure.route'
 local Error = require 'luxure.error'
 ---@class Router
 ---
