@@ -1,5 +1,5 @@
 local Route = require 'luxure.route'.Route
-local Error = require 'luxure.error'.Error
+local Error = require 'luxure.error'
 ---@class Router
 ---
 ---The decision maker that pairs in incoming request with a registered

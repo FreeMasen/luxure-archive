@@ -1,4 +1,4 @@
-local Error = require 'luxure.error'.Error
+local Error = require 'luxure.error'
 ---@class Headers
 ---
 ---A map of the key value pairs from the header portion

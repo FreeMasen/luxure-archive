@@ -109,6 +109,4 @@ function Error.pcall(...)
     return success, table.unpack(res, 2)
 end
 
-return {
-    Error = Error,
-}
+return Error

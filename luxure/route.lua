@@ -1,5 +1,5 @@
 local net_url = require 'net.url'
-local Error = require 'luxure.error'.Error
+local Error = require 'luxure.error'
 
 ---@class Route
 ---

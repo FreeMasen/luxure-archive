@@ -1,5 +1,5 @@
 local cosock = require 'cosock'
-local Error = require 'luxure.error'.Error
+local Error = require 'luxure.error'
 local lunch_utils = require 'luncheon.utils'
 
 ---@class Sse @

@@ -3,7 +3,7 @@ local lunch = require 'luncheon'
 local Request = lunch.Request
 local Response = lunch.Response
 local methods = require 'luxure.methods'
-local Error = require 'luxure.error'.Error
+local Error = require 'luxure.error'
 local cosock = require "cosock"
 
 ---@alias handler fun(req: Request, res: Response)
