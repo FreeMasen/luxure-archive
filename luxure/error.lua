@@ -66,7 +66,12 @@ local function parse_error_msg(s)
     }
     local values = {}
     for part in string.gmatch(s, '[^|]+') do
-        values[keys[i]] = part
+        local key = keys[i]
+        if not key then
+            i = 10
+            break
+        end
+        values[key] = part
         i = i + 1
     end
     if i == 2 then
