@@ -1,4 +1,4 @@
-local Router = require 'luxure.router'.Router
+local Router = require 'luxure.router'
 local lunch = require 'luncheon'
 local Request = lunch.Request
 local Response = lunch.Response

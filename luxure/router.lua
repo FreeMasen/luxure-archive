@@ -46,6 +46,4 @@ function Router:register_handler(path, method, callback)
 end
 
 
-return {
-    Router = Router,
-}
+return Router

@@ -1,4 +1,4 @@
-local Router = require 'luxure.router'.Router
+local Router = require 'luxure.router'
 local Request = require 'luncheon.request'
 local Response = require 'luncheon.response'
 local MockSocket = require 'spec.mock_socket'.MockSocket
