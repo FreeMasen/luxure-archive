@@ -209,26 +209,41 @@ end
 ---and when that returns a client socket, it will
 ---attempt to route the Request/Response objects through
 ---the registered middleware and routes
-function Server:tick()
-    local incoming = Error.assert(self.sock:accept())
+function Server:tick(err_callback)
+    local incoming, err = self.sock:accept()
+    if not incoming then
+        err_callback(err)
+        return
+    end
     if not self._sync then
         cosock.spawn(
-            function() self:_tick(incoming) end,
-            string.format('Accepted request ptr: %s', incoming)
+            function()
+                local nopanic, success, err = pcall(self._tick, self, incoming)
+                if not nopanic then
+                    err_callback(success)
+                    return
+                end
+                if not success then
+                    err_callback(err)
+                end
+            end,
+            string.format('Accepted request (ptr: %s)', incoming)
         )
     else
-        return self:_tick(incoming)
+        local nopanic, success, err = pcall(self._tick, self, incoming)
+        if not nopanic then
+            err_callback(success)
+            return
+        end
+        if not success then
+            err_callback(err)
+        end
     end
 end
 
 function Server:_run(err_callback)
     while true do
-        local success, msg = self:tick()
-        if not success then
-            if not err_callback(msg) then
-                return
-            end
-        end
+        self:tick(err_callback)
     end
 end
 ---Start this server, blocking forever

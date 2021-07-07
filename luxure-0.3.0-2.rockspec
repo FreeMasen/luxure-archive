@@ -12,7 +12,7 @@ dependencies = {
    "lua >= 5.1",
    "cosock >= 0.1.0",
    "logface >= 0.0.1",
-   "luncheon >= 0.0.0-10",
+   "luncheon >= 0.0.0-12",
    "net-url >= 0.9",
 }
 build = {
