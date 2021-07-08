@@ -1,3 +1,4 @@
+-- LuaFormatter off
 return {
     'ACL',
     'BIND',
@@ -33,3 +34,4 @@ return {
     'UNLOCK',
     'UNSUBSCRIBE',
 }
+-- LuaFormatter on
