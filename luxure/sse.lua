@@ -1,6 +1,7 @@
 local cosock = require "cosock"
 local Error = require "luxure.error"
 local lunch_utils = require "luncheon.utils"
+local log = require "log"
 
 ---@class Sse @
 ---
@@ -145,7 +146,7 @@ function Sse.new(res, keepalive)
     while true do
       local succ, err = tick(rx, res, timeout)
       if not succ then
-        print("error in sse tick", err)
+        log.error("error in sse tick", err)
         break
       end
     end

@@ -178,8 +178,8 @@ end
 local function error_request(env, err, res)
   log.trace("error_request")
   if res:has_sent() then
-    print("error sending after bytes have been sent...")
-    print(err)
+    log.warn("error sending after bytes have been sent...")
+    log.warn(err)
     return
   end
   if env == "production" then
