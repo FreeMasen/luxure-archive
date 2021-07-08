@@ -240,15 +240,11 @@ function Server:tick(err_callback)
   end
 end
 
---LuaFormatter off
 function Server:_run(err_callback, should_continue)
   should_continue = should_continue or function() return true end
   log.trace("Server:_run")
-  while should_continue() do
-    self:tick(err_callback)
-  end
+  while should_continue() do self:tick(err_callback) end
 end
---LuaFormatter on
 
 ---Start this server, blocking forever
 ---@param err_callback fun(msg:string):boolean Optional callback to be run if `tick` returns an error
@@ -256,7 +252,8 @@ function Server:run(err_callback, should_continue)
   log.trace("Server:run")
   err_callback = err_callback or function() return true end
   if not self._sync then
-    cosock.spawn(function() self:_run(err_callback, should_continue) end, "luxure-main-loop")
+    cosock.spawn(function() self:_run(err_callback, should_continue) end,
+                 "luxure-main-loop")
     cosock.run()
   else
     self:_run(err_callback, should_continue)
