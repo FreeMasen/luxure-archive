@@ -1,5 +1,0 @@
-===============
-Response
-===============
-
-.. lua:autoclass:: Response

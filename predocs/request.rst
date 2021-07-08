@@ -1,5 +1,0 @@
-===============
-Request
-===============
-
-.. lua:autoclass:: Request

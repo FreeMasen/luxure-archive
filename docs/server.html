@@ -88,9 +88,6 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="error.html">Error</a></li>
-<li class="toctree-l1"><a class="reference internal" href="headers.html">Headers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="request.html">Request</a></li>
-<li class="toctree-l1"><a class="reference internal" href="response.html">Response</a></li>
 <li class="toctree-l1"><a class="reference internal" href="router.html">Router</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Server</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#registering-handlers">Registering Handlers</a></li>
@@ -345,8 +342,8 @@ also be compatible with cosock</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>req</strong> (<a class="reference internal" href="request.html#Request" title="Request"><em>Request</em></a>) – </p></li>
-<li><p><strong>res</strong> (<a class="reference internal" href="response.html#Response" title="Response"><em>Response</em></a>) – </p></li>
+<li><p><strong>req</strong> (<em>Request</em>) – </p></li>
+<li><p><strong>res</strong> (<em>Response</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -364,17 +361,25 @@ also be compatible with cosock</p>
 
 <dl class="lua method">
 <dt id="Server.tick">
-<em class="property"> </em><code class="sig-name descname">tick</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Server.tick" title="Permalink to this definition">¶</a></dt>
+<em class="property"> </em><code class="sig-name descname">tick</code><span class="sig-paren">(</span><em class="sig-param">err_callback</em><span class="sig-paren">)</span><a class="headerlink" href="#Server.tick" title="Permalink to this definition">¶</a></dt>
 <dd><p>A single step in the Server run loop</p>
 <p>which will call <cite>accept</cite> on the underlying socket and when that returns a client socket, it will attempt to route the Request/Response objects through the registered middleware and routes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>err_callback</strong> (<em>any</em>) – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="lua method">
 <dt id="Server._run">
-<em class="property"> </em><code class="sig-name descname">_run</code><span class="sig-paren">(</span><em class="sig-param">err_callback</em><span class="sig-paren">)</span><a class="headerlink" href="#Server._run" title="Permalink to this definition">¶</a></dt>
+<em class="property"> </em><code class="sig-name descname">_run</code><span class="sig-paren">(</span><em class="sig-param">err_callback</em>, <em class="sig-param">should_continue</em><span class="sig-paren">)</span><a class="headerlink" href="#Server._run" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>err_callback</strong> (<em>any</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>err_callback</strong> (<em>any</em>) – </p></li>
+<li><p><strong>should_continue</strong> (<em>any</em>) – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

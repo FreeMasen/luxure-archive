@@ -4,9 +4,6 @@
    :hidden:
 
    error
-   headers
-   request
-   response
    router
    server
    sse
