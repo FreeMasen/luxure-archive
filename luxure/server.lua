@@ -1,9 +1,10 @@
+local Error = require "luxure.error"
+local KeepAlive = require "luxure.keep_alive"
+local methods = require "luxure.methods"
 local Router = require "luxure.router"
 local lunch = require "luncheon"
 local Request = lunch.Request
 local Response = lunch.Response
-local methods = require "luxure.methods"
-local Error = require "luxure.error"
 local cosock = require "cosock"
 local log = require "log"
 
@@ -93,6 +94,7 @@ function Server.new_with(sock, opts)
     ---@type number
     backlog = opts.backlog,
     _sync = opts.sync,
+    _kept_alive = KeepAlive.new(),
   }
   return setmetatable(base, Server)
 end
@@ -192,6 +194,9 @@ end
 
 function Server:_tick(incoming)
   log.trace("Server:_tick")
+  --remove from the _kept_alive map to avoid selecting
+  --the active request socket
+  self._kept_alive:remove(incoming)
   local req, req_err = Request.tcp_source(incoming)
   if req_err then
     incoming:close()
@@ -205,8 +210,32 @@ function Server:_tick(incoming)
   elseif not req.handled then
     if not has_sent then res:set_status(404):send("") end
   end
+  local headers = req:get_headers()
+  local connection = headers and headers:get_one("connection")
+  if connection == "keep-alive" then
+    self._kept_alive:append(incoming)
+    return 1
+  end
   if not res.hold_open then incoming:close() end
   return 1
+end
+
+function Server:accept()
+  local select
+  if #self._kept_alive <= 0 then
+    return self.sock:accept()
+  end
+  if self._sync then
+    select = require "socket".select
+  else
+    select = require "cosock".socket.select
+  end
+  local recv_t = {self.sock}
+  for _, sock in pairs(self._kept_alive) do
+    table.insert(recv_t, sock)
+  end
+  local recv, _, err = select(recv_t)
+  return (recv or {})[1], err
 end
 
 ---A single step in the Server run loop
@@ -216,7 +245,7 @@ end
 ---the registered middleware and routes
 function Server:tick(err_callback)
   log.trace("Server:tick")
-  local incoming, err = self.sock:accept()
+  local incoming, err = self:accept()
   if not incoming then
     err_callback(err)
     return

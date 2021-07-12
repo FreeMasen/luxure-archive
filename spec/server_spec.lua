@@ -14,7 +14,7 @@ describe('Server', function()
         s:get('/', function(req, res)
             called = true
         end)
-        s:tick()
+        s:tick(error)
         assert(called)
     end)
     it('should call middleware and handle requests', function()
@@ -31,7 +31,7 @@ describe('Server', function()
         s:get('/', function(req, res)
             called = true
         end)
-        s:tick()
+        s:tick(error)
         assert(called)
         assert(called_middleware)
     end)
@@ -51,12 +51,12 @@ describe('Server', function()
         s:get('/', function(req, res)
             called = true
         end)
-        s:tick()
+        s:tick(error)
         assert(called)
         assert(middleware_call_count == 10)
     end)
     it('middleware error should return 500', function()
-        local sock = {'GET / HTTP/1.1'}
+        local sock = {'GET / HTTP/1.1', ''}
         local s = assert(Server.new_with(mocks.MockTcp.new({
             sock
         }), {sync = true}))
@@ -68,25 +68,25 @@ describe('Server', function()
         s:get('/', function(req, res)
             called = true
         end)
-        s:tick()
+        s:tick(error)
         assert(not called)
         assert(string.find(
-            sock[1],
+            sock[1] or '',
             '^HTTP/1.1 500 Internal Server Error'),
             string.format('Expected 500 found %s',  utils.table_string(sock))
         )
     end)
     it('no endpoint found should return 404', function()
-        local sock = {'GET / HTTP/1.1'}
+        local sock = {'GET / HTTP/1.1', ''}
         local s = assert(Server.new_with(mocks.MockTcp.new({
             sock
         }), {sync = true}))
         s:listen(8080)
-        s:tick()
+        s:tick(error)
         assert(string.find(sock[1], '^HTTP/1.1 404 Not Found'), string.format('Expected 404 found %s',  utils.table_string(sock)))
     end)
     it('no endpoint found should return 404, with endpoints', function()
-        local sock = {'GET /not-found HTTP/1.1'}
+        local sock = {'GET /not-found HTTP/1.1', ''}
         local s = assert(Server.new_with(mocks.MockTcp.new({
             sock
         }), {sync = true}))
