@@ -1,11 +1,11 @@
 package = "luxure"
 version = "0.3.0-3"
 source = {
-   url = "git://github.com/FreeMasen/luxure",
-   tag = "v0.3.0-pre3"
+   url = "git://github.com/cosock/luxure",
+   tag = "v0.3.0-3"
 }
 description = {
-   homepage = "https://github.com/FreeMasen/luxure",
+   homepage = "https://cosock.github.io/luxure",
    license = "MIT"
 }
 dependencies = {
