@@ -1,4 +1,5 @@
 local Server = require 'luxure.server'.Server
+local Opts = require 'luxure.server'.Opts
 local mocks = require 'spec.mock_socket'
 local utils = require 'luxure.utils'
 local Error = require 'luxure.error'.Error
@@ -98,4 +99,12 @@ describe('Server', function()
         assert(string.find(sock[1], '^HTTP/1.1 404 Not Found'), string.format('Expected 404 found %s',  utils.table_string(sock)))
     end)
 
+end)
+
+describe('Opts', function()
+    it('builder', function()
+        local opts = Opts.new():set_env('debug'):set_backlog(1)
+        assert.are.equal('debug', opts.env)
+        assert.are.equal(1, opts.backlog)
+    end)
 end)

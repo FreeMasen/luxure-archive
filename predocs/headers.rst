@@ -1,5 +1,0 @@
-===============
-Headers
-===============
-
-.. lua:autoclass:: Headers

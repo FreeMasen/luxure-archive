@@ -8,3 +8,4 @@ express/
 /*.lua
 *.rock
 tmp
+/*.out

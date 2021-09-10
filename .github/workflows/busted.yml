@@ -24,14 +24,10 @@ jobs:
         run: luarocks install busted
       - name: install luacov
         run: luarocks install luacov
-      - name: install cosock
-        run: luarocks install cosock
-      - name: install luasec
+      - name: install luacov
         run: luarocks install luasec
-      - name: install net-url
-        run: luarocks install net-url
-      - name: install logface
-        run: luarocks install logface
+      - name: luarocks make
+        run: luarocks make
       - name: test
         run: |
           busted -c \
