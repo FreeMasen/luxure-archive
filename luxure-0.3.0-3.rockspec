@@ -1,8 +1,8 @@
 package = "luxure"
-version = "0.3.0-2"
+version = "0.3.0-3"
 source = {
    url = "git://github.com/FreeMasen/luxure",
-   tag = "v0.3.0-pre2"
+   tag = "v0.3.0-pre3"
 }
 description = {
    homepage = "https://github.com/FreeMasen/luxure",
@@ -12,7 +12,7 @@ dependencies = {
    "lua >= 5.1",
    "cosock >= 0.1.0",
    "logface >= 0.0.2",
-   "luncheon >= 0.0.0-13",
+   "luncheon >= 0.1.0",
    "net-url >= 0.9",
 }
 build = {
