@@ -92,7 +92,7 @@ end)
 -- define a GET endpoint, expecting query params
 server:get('/hello', function(req, res)
     if req.url.query.name == nil then
-        res:status(404):sent()
+        res:status(404):send()
         return
     end
     res:send(string.format('Hello %s!', req.url.query.name))
