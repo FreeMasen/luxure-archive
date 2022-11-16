@@ -46,7 +46,7 @@ server:use(function (req, res, next)
             req.url.user or '',
             os.date('%Y-%m-%dT%H:%M:%S%z', start),
             request,
-            res._status,
+            res:status(),
             sent,
             req:get_headers().referrer or '-',
             req:get_headers().user_agent or '-'
@@ -92,7 +92,7 @@ end)
 -- define a GET endpoint, expecting query params
 server:get('/hello', function(req, res)
     if req.url.query.name == nil then
-        res:status(404):sent()
+        res:set_status(404):send()
         return
     end
     res:send(string.format('Hello %s!', req.url.query.name))
